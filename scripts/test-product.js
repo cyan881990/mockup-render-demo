@@ -1,68 +1,83 @@
-/** Drives the real product page in a DOM against the running server. */
+/** Loads the real product page + product.js in a DOM and walks the stepped option flow. */
 const { JSDOM } = require('jsdom');
 const BASE = process.env.BASE || 'http://localhost:3000';
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const PRODUCT = process.env.PRODUCT || 'grandkids-snowflake-ornament';
 
 (async () => {
-  const html = await (await fetch(`${BASE}/product.html`)).text();
+  const url = `${BASE}/?product=${PRODUCT}`;
+  const html = await (await fetch(url)).text();
   const js = await (await fetch(`${BASE}/product.js`)).text();
-  const dom = new JSDOM(html, { url: `${BASE}/product.html`, runScripts: 'outside-only', pretendToBeVisual: true });
+  const dom = new JSDOM(html, { url, runScripts: 'outside-only', pretendToBeVisual: true });
   const { window } = dom;
   const errors = [];
   window.addEventListener('error', (e) => errors.push(String(e.error || e.message)));
   window.fetch = (u, o) => fetch(new URL(u, BASE), o);
   window.URL.createObjectURL = (b) => `blob:fake/${b.size}`;
-  window.URL.revokeObjectURL = () => {};
   window.performance = globalThis.performance;
-  window.navigator.clipboard = { writeText: async () => {} };
   try { window.eval(js); } catch (e) { errors.push('eval: ' + e.message); }
 
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
   const $ = (s) => window.document.querySelector(s);
   const $$ = (s) => [...window.document.querySelectorAll(s)];
-  const ok = (n, c, x = '') => console.log(`${c ? 'PASS' : 'FAIL'}  ${n}${x ? '  — ' + x : ''}`);
-  await wait(2000);
+  const click = (n) => n.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  let fails = 0;
+  const check = (name, cond, extra = '') => {
+    if (!cond) fails++;
+    console.log(`${cond ? 'PASS' : 'FAIL'}  ${name}${extra ? '  — ' + extra : ''}`);
+  };
+  await wait(1800);
 
-  ok('title loaded', /Runner Rug/i.test($('#title').textContent), $('#title').textContent);
-  ok('variant buttons', $$('.variants button').length === 2);
-  ok('option fieldsets', $$('#opts fieldset').length >= 5, `${$$('#opts fieldset').length}`);
-  ok('background swatches', $$('#opts fieldset:nth-child(2) .sw').length === 6);
-  ok('member steps 1..6', $$('.steps button').length === 6);
-  ok('member rows match count', $$('.member').length === 3, `${$$('.member').length} rows`);
-  ok('hero rendered', /^blob:/.test($('#hero').src || ''), $('#hero').src);
-  ok('render stamp', /ms/.test($('#stamp').textContent), $('#stamp').textContent);
-  ok('thumbs', $$('#thumbs button').length === 2);
-  ok('url shown', $('#url').textContent.includes('/render?'), $('#url').textContent.slice(0, 80));
+  const steps = $$('#opts .step');
+  check('các bước được dựng', steps.length >= 3, `${steps.length} bước`);
+  check('chỉ bước 1 mở sẵn', $$('#opts .step.open').length === 1,
+    $('#opts .step.open .st')?.textContent);
+  check('bước sau bị khoá', $$('#opts .step.locked').length === steps.length - 1,
+    `${$$('#opts .step.locked').length} khoá`);
+  check('option chưa đổ hết ra', $$('#opts .step:not(.open) fieldset').length === 0);
 
-  // change member count 3 -> 5 and confirm rows + url follow
-  $$('.steps button')[4].dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  // bấm một ô màu trong bước đang mở -> ảnh phải dựng lại
+  const sw = $$('#opts .step.open .sw');
+  check('bước 1 có ô màu', sw.length > 2, `${sw.length} ô`);
+  const beforeUrl = window.location.search;
+  click(sw[2]);
   await wait(900);
-  ok('member=5 adds rows', $$('.member').length === 5, `${$$('.member').length}`);
-  ok('url carries member=5', window.location.search.includes('member=5'), window.location.search.slice(0, 90));
+  check('chọn màu đổi URL', window.location.search !== beforeUrl,
+    window.location.search.slice(1, 60));
+  check('ảnh đã dựng', /^blob:/.test($('#hero').getAttribute('src') || ''));
 
-  // pick a background swatch
-  const before = $('#url').textContent;
-  $$('#opts fieldset:nth-child(2) .sw')[2].dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
-  await wait(900);
-  ok('swatch changes render url', $('#url').textContent !== before, $('#url').textContent.split('?')[1]?.slice(0, 70));
+  // Tiếp tục -> bước 2 mở, bước 1 đóng lại và hiện tóm tắt
+  click($('#opts .step.open .next'));
+  await wait(400);
+  check('qua bước 2', $$('#opts .step')[1].classList.contains('open'),
+    $('#opts .step.open .st')?.textContent);
+  check('bước 1 thu gọn còn tóm tắt', ($$('#opts .step')[0].querySelector('.sv').textContent || '').length > 0,
+    $$('#opts .step')[0].querySelector('.sv').textContent);
+  check('bước 1 đánh dấu xong', $$('#opts .step')[0].querySelector('.sn').textContent === '✓');
 
-  // required-field validation
-  const nameInput = $$('#opts .field input')[0];
-  nameInput.value = ''; nameInput.dispatchEvent(new window.Event('input', { bubbles: true }));
-  await wait(200);
-  ok('empty name blocks cart', $('#add').disabled === true);
-  nameInput.value = 'Gia đình Trần'; nameInput.dispatchEvent(new window.Event('input', { bubbles: true }));
-  await wait(900);
-  ok('valid name enables cart', $('#add').disabled === false);
-  ok('vietnamese name in url', decodeURIComponent(window.location.search).includes('Trần'));
+  // chọn số thành viên rồi sang bước điền tên
+  const counts = $$('#opts .step.open .steps button');
+  if (counts.length) {
+    click(counts[Math.min(3, counts.length - 1)]);
+    await wait(700);
+    click($('#opts .step.open .next'));
+    await wait(400);
+    const rows = $$('#opts .step.open .member');
+    check('bước tên mở đúng số dòng', rows.length === Math.min(4, counts.length), `${rows.length} dòng`);
+    const inp = $('#opts .step.open .member input');
+    if (inp) {
+      inp.value = 'Mía';
+      inp.dispatchEvent(new window.Event('input', { bubbles: true }));
+      await wait(700);
+      check('tên vào URL', window.location.search.includes('M%C3%ADa'));
+    }
+  }
 
-  // per-member colour
-  const mini = $$('.member .mini .sw');
-  if (mini.length) { mini[3].dispatchEvent(new window.MouseEvent('click', { bubbles: true })); await wait(800); }
-  ok('per-member colour applied', /soc1=/.test(window.location.search), window.location.search.match(/soc\d=\w+/g)?.slice(0, 3).join(' '));
+  // bấm lại tiêu đề bước 1 để mở ra sửa
+  click($$('#opts .step')[0].querySelector('.sh'));
+  await wait(300);
+  check('mở lại bước đã xong để sửa', $$('#opts .step')[0].classList.contains('open'));
 
-  // quantity + price
-  $('#qp').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
-  ok('qty price doubles', $('#price').textContent === '$79.90', $('#price').textContent);
-  ok('no uncaught JS errors', errors.length === 0, errors.join(' | '));
-  window.close(); process.exit(0);
+  check('không có lỗi JS', errors.length === 0, errors.join(' | '));
+  console.log(fails ? `\n${fails} FAIL` : '\nTất cả bước OK');
+  process.exit(fails ? 1 : 0);
 })();

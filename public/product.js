@@ -33,7 +33,7 @@ const VARIANTS = [
   { id: 'set2', name: 'Bộ 2 món', price: 59.95, was: 99.95 },
 ];
 
-const state = { product: null, schema: null, mockup: null, opt: {}, qty: 1, variant: 'single' };
+const state = { product: null, schema: null, mockup: null, opt: {}, qty: 1, variant: 'single', step: 0, done: new Set() };
 let heroSeq = 0;
 
 /* ---------------- URL <-> state ---------------- */
@@ -146,26 +146,53 @@ function legendFor(o, extra) {
   return el('legend', {}, bits);
 }
 
-function buildOptions() {
-  const form = $('#opts');
-  form.innerHTML = '';
-  const s = state.schema;
+/* ---------------- luồng theo bước (kiểu Teeinblue: mở lần lượt, không đổ hết option ra) ---------------- */
+const STEP_TITLE = {
+  style: 'Chọn kiểu & màu', count: 'Số thành viên',
+  members: 'Tên từng thành viên', text: 'Dòng chữ của bạn',
+};
 
-  /* Style / variant — a storefront concern, not a render option */
-  const vfs = el('fieldset');
-  vfs.append(el('legend', {}, [el('span', { text: 'Kiểu' })]));
-  const vrow = el('div', { class: 'variants' });
-  for (const v of VARIANTS) {
-    const b = el('button', {
-      type: 'button', class: state.variant === v.id ? 'on' : '',
-      onclick: () => { state.variant = v.id; buildOptions(); priceOut(); writeUrl(); },
-    }, [el('span', { class: 'vn', text: v.name }), el('span', { class: 'vp', text: `$${v.price.toFixed(2)}` })]);
-    vrow.append(b);
+/** Chia option trong schema thành các bước — suy ra từ kiểu option nên
+ *  sản phẩm nào quét về cũng tự chia được, không cần cấu hình tay. */
+function stepPlan() {
+  const simple = state.schema.options.filter((o) => !o.indexed);
+  const indexed = state.schema.options.filter((o) => o.indexed);
+  const plan = [];
+  const picks = simple.filter((o) => o.type === 'swatch' || o.type === 'enum');
+  plan.push({ id: 'style', opts: picks });
+  const counts = simple.filter((o) => o.type === 'range' || o.type === 'int');
+  if (counts.length) plan.push({ id: 'count', opts: counts });
+  if (indexed.length) plan.push({ id: 'members', opts: indexed });
+  const texts = simple.filter((o) => !['swatch', 'enum', 'range', 'int'].includes(o.type));
+  if (texts.length) plan.push({ id: 'text', opts: texts });
+  return plan;
+}
+
+/** Dòng tóm tắt hiện trên đầu bước đã đóng, để không phải mở ra mới biết đã chọn gì. */
+function stepSummary(st) {
+  if (st.id === 'members') {
+    const t = st.opts.find((o) => o.type === 'text');
+    const n = Number(state.opt[st.opts[0].indexed.by] ?? 0);
+    const from = st.opts[0].indexed.from ?? 1;
+    const names = [];
+    for (let i = 0; i < n && t; i++) {
+      const v = String(state.opt[`${t.key}${from + i}`] ?? '').trim();
+      if (v) names.push(v);
+    }
+    return names.length ? names.join(', ') : 'chưa điền tên';
   }
-  vfs.append(vrow); form.append(vfs);
+  const bits = st.opts.map((o) => {
+    const v = state.opt[o.key];
+    if (v === '' || v == null) return null;
+    const hit = o.values && o.values.find((x) => String(x.value) === String(v));
+    return SWATCH_VI[v] || hit?.label || String(v);
+  }).filter(Boolean);
+  return bits.join(' · ') || 'chưa chọn';
+}
 
-  const simple = s.options.filter((o) => !o.indexed);
-  const indexed = s.options.filter((o) => o.indexed);
+function fieldsFor(opts, box) {
+  const simple = opts.filter((o) => !o.indexed);
+  const indexed = opts.filter((o) => o.indexed);
 
   for (const o of simple) {
     const fs = el('fieldset');
@@ -202,28 +229,28 @@ function buildOptions() {
       wrap.append(inp, cnt);
       fs.append(wrap);
     }
-    form.append(fs);
+    box.append(fs);
   }
 
-  /* per-member rows: one line each, name + colour together */
+  /* mỗi thành viên một dòng: tên và màu đi cùng nhau */
   if (indexed.length) {
     const count = Number(state.opt[indexed[0].indexed.by] ?? 0);
     const from = indexed[0].indexed.from ?? 1;
     const fs = el('fieldset');
-    fs.append(el('legend', {}, [el('span', { text: 'Từng thành viên' }),
-      el('span', { class: 'pick', text: `${count} chiếc tất` })]));
-    const box = el('div', { class: 'members' });
     const textOpt = indexed.find((o) => o.type === 'text');
     const colorOpt = indexed.find((o) => o.values);
+    fs.append(el('legend', {}, [el('span', { text: 'Điền tên' }),
+      el('span', { class: 'pick', text: `${count} ô · bỏ trống cũng được` })]));
+    const wrap = el('div', { class: 'members' });
     for (let i = 0; i < count; i++) {
       const n = from + i;
       const row = el('div', { class: 'member' });
       row.append(el('div', { class: 'idx', text: String(n) }));
       if (textOpt) {
         row.append(el('input', {
-          type: 'text', maxlength: textOpt.maxLength || 10, placeholder: `Tên ${n} (không bắt buộc)`,
+          type: 'text', maxlength: textOpt.maxLength || 10, placeholder: `Tên ${n}`,
           value: state.opt[`${textOpt.key}${n}`] ?? '',
-          oninput: (e) => set(`${textOpt.key}${n}`, e.target.value),
+          oninput: (e) => { set(`${textOpt.key}${n}`, e.target.value); },
         }));
       }
       if (colorOpt) {
@@ -231,11 +258,61 @@ function buildOptions() {
         mini.append(swatchRow(`${colorOpt.key}${n}`, colorOpt.values, state.opt[`${colorOpt.key}${n}`], '26px'));
         row.append(mini);
       }
-      box.append(row);
+      wrap.append(row);
     }
-    fs.append(box);
-    form.append(fs);
+    fs.append(wrap);
+    box.append(fs);
   }
+}
+
+function buildOptions() {
+  const form = $('#opts');
+  form.innerHTML = '';
+
+  /* Kiểu hàng — chuyện của gian hàng, không phải option render */
+  const vfs = el('fieldset');
+  vfs.append(el('legend', {}, [el('span', { text: 'Kiểu' })]));
+  const vrow = el('div', { class: 'variants' });
+  for (const v of VARIANTS) {
+    const b = el('button', {
+      type: 'button', class: state.variant === v.id ? 'on' : '',
+      onclick: () => { state.variant = v.id; buildOptions(); priceOut(); writeUrl(); },
+    }, [el('span', { class: 'vn', text: v.name }), el('span', { class: 'vp', text: `$${v.price.toFixed(2)}` })]);
+    vrow.append(b);
+  }
+  vfs.append(vrow); form.append(vfs);
+
+  const plan = stepPlan();
+  plan.forEach((st, i) => {
+    const open = i === state.step;
+    const done = state.done.has(st.id);
+    const locked = !open && !done && i > state.step;
+    const card = el('div', { class: `step${open ? ' open' : ''}${locked ? ' locked' : ''}` });
+    card.append(el('button', {
+      type: 'button', class: 'sh', disabled: locked ? '' : null,
+      onclick: () => { state.step = open ? -1 : i; buildOptions(); },
+    }, [
+      el('span', { class: 'sn', text: done && !open ? '✓' : String(i + 1) }),
+      el('span', { class: 'st', text: STEP_TITLE[st.id] || st.id }),
+      el('span', { class: 'sv', text: open ? '' : (locked ? 'mở sau' : stepSummary(st)) }),
+      el('span', { class: 'sc', text: open ? '▴' : '▾' }),
+    ]));
+    if (open) {
+      const body = el('div', { class: 'sb' });
+      fieldsFor(st.opts, body);
+      const last = i === plan.length - 1;
+      body.append(el('button', {
+        type: 'button', class: 'next', text: last ? 'Xong' : 'Tiếp tục',
+        onclick: () => {
+          state.done.add(st.id);
+          state.step = last ? -1 : i + 1;
+          buildOptions(); validate();
+        },
+      }));
+      card.append(body);
+    }
+    form.append(card);
+  });
 }
 
 /* ---------------- misc storefront bits ---------------- */
@@ -283,6 +360,13 @@ function countdown() {
   }
   Object.assign(state.opt, fromUrl.opt);
   state.mockup = fromUrl.mockup || (state.schema.mockups.find((m) => m.default) || state.schema.mockups[0]).id;
+
+  /* link chia sẻ đã có sẵn lựa chọn thì coi như xong hết, hiện bản tóm tắt
+     thay vì bắt người ta bấm lại từ bước 1 */
+  if (Object.keys(fromUrl.opt).length) {
+    for (const st of stepPlan()) state.done.add(st.id);
+    state.step = -1;
+  }
 
   $('#title').textContent = state.schema.product.title;
   $('#crumb').textContent = state.schema.product.title;

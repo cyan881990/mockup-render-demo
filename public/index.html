@@ -142,6 +142,24 @@ table.spec th{color:var(--muted);font-weight:500;width:170px}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.22s;z-index:50;box-shadow:var(--shadow);max-width:90vw}
 .toast.on{opacity:1;transform:translateX(-50%)}
 footer{border-top:1px solid var(--line);margin-top:50px;padding:22px 20px;text-align:center;font-size:12.5px;color:var(--muted)}
+
+/* --- các bước chọn option (mở lần lượt) --- */
+.step{border:1.5px solid var(--line);border-radius:var(--radius);margin-bottom:10px;background:#fff;overflow:hidden}
+.step.open{border-color:var(--ink)}
+.step.locked{opacity:.5}
+.step .sh{display:flex;align-items:center;gap:10px;width:100%;padding:13px 14px;background:none;border:0;text-align:left;cursor:pointer;font:inherit}
+.step.locked .sh{cursor:default}
+.step .sn{flex:0 0 22px;height:22px;border-radius:50%;background:var(--line);color:var(--ink);
+  display:grid;place-items:center;font-size:12px;font-weight:700}
+.step.open .sn{background:var(--ink);color:#fff}
+.step .st{font-weight:650;font-size:14px}
+.step .sv{flex:1;min-width:0;color:var(--muted);font-size:13px;text-align:right;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step .sc{color:var(--muted);font-size:12px}
+.step .sb{padding:4px 14px 14px;border-top:1px solid var(--line)}
+.step .sb fieldset{margin-bottom:16px}
+.step .next{width:100%;height:44px;border:0;border-radius:10px;background:var(--ink);color:#fff;
+  font-weight:650;font-size:14px;cursor:pointer}
 </style>
 </head>
 <body>

@@ -114,62 +114,69 @@ function stack({ canvas, pack, ink, accent, bg, has }) {
 function round({ canvas, pack, ink, accent, bg, has }) {
   const { w, h } = canvas;
   const cx = w / 2;
-  // mặt in tròn: bề ngang dùng được hẹp dần khi xa tâm theo chiều dọc
-  const R = w * 0.45;
-  const safeW = (yFrac, k = 0.92) =>
+  const L = [];
+
+  /* Khung vòng nguyệt quế chiếm trọn mặt đĩa, nên mọi thứ còn lại phải nằm
+     gọn trong lỗ giữa của nó — R là bán kính an toàn, tính từ pack. */
+  const frame = pack.frame;
+  const R = w * (frame ? (frame.inner ?? 0.355) : 0.45);
+  const safeW = (yFrac, k = 0.94) =>
     Math.round(2 * Math.sqrt(Math.max(0, R * R - Math.pow(yFrac * h - h / 2, 2))) * k);
 
-  const itemW = Math.round(w * 0.115);
+  const itemW = Math.round(w * 0.092);
   const itemH = Math.round(itemW / (pack.item.aspect || 1));
-  const L = [];
 
   if (bg) {
     L.push({ type: 'rect', x: 0, y: 0, w, h, fill: { gradient: [
-      { at: 0, color: '#000000', opacity: 0.22 },
-      { at: 0.55, color: '#000000', opacity: 0 },
-      { at: 1, color: '#ffffff', opacity: 0.10 }], angle: 90 } });
+      { at: 0, color: '#ffffff', opacity: 0.10 },
+      { at: 0.5, color: '#000000', opacity: 0 },
+      { at: 1, color: '#000000', opacity: 0.28 }], angle: 90 } });
   }
-  L.push({ type: 'pattern', src: 'snow.png', size: Math.round(w * 0.17), opacity: 0.13, w, h });
-  L.push({ type: 'ellipse', cx, cy: h / 2, rx: Math.round(w / 2 - 30), ry: Math.round(h / 2 - 30),
-    fill: 'none', stroke: accent, strokeWidth: 7, opacity: 0.85 });
-  L.push({ type: 'ellipse', cx, cy: h / 2, rx: Math.round(w / 2 - 48), ry: Math.round(h / 2 - 48),
-    fill: 'none', stroke: accent, strokeWidth: 2, opacity: 0.45 });
+  L.push({ type: 'pattern', src: 'snow.png', size: Math.round(w * 0.15), opacity: 0.11, w, h });
 
-  // năm đi chung một dòng với dòng chữ trên — tránh đè lên vòng bông tuyết
-  const headSize = Math.round(w * 0.046);
-  const headFit = { maxWidth: safeW(0.14), minSize: 18 };
+  if (frame) {
+    L.push({ type: 'image', src: frame.src, x: 0, y: 0, w, h });
+  } else {
+    L.push({ type: 'ellipse', cx, cy: h / 2, rx: Math.round(w / 2 - 30), ry: Math.round(h / 2 - 30),
+      fill: 'none', stroke: accent, strokeWidth: 7, opacity: 0.85 });
+  }
+
+  /* năm đi chung một dòng với dòng chữ trên — tránh đè lên vòng bông tuyết */
+  const headSize = Math.round(w * 0.038);
+  const headFit = { maxWidth: Math.min(safeW(0.225), Math.round(w * 0.44)), minSize: 16 };
   if (has.headline) {
     L.push(txt({ when: '{{opt.year}} != ', text: '{{opt.headline}} · {{opt.year}}', font: 'slab',
-      size: headSize, x: cx, y: Math.round(h * 0.17), align: 'center', fill: accent,
-      letterSpacing: 7, transformText: 'upper', fit: headFit }));
+      size: headSize, x: cx, y: Math.round(h * 0.245), align: 'center', fill: accent,
+      letterSpacing: 6, transformText: 'upper', fit: headFit }));
     L.push(txt({ when: '{{opt.year}} == ', text: '{{opt.headline}}', font: 'slab',
-      size: headSize, x: cx, y: Math.round(h * 0.17), align: 'center', fill: accent,
-      letterSpacing: 7, transformText: 'upper', fit: headFit }));
+      size: headSize, x: cx, y: Math.round(h * 0.245), align: 'center', fill: accent,
+      letterSpacing: 6, transformText: 'upper', fit: headFit }));
   }
-  L.push(txt({ text: '{{opt.name}}', font: 'script', size: Math.round(w * 0.115),
-    x: cx, y: Math.round(h * 0.285), align: 'center', fill: ink,
-    fit: { maxWidth: Math.min(safeW(0.215), Math.round(w * 0.62)), minSize: 40 } }));
+  L.push(txt({ text: '{{opt.name}}', font: 'script', size: Math.round(w * 0.105),
+    x: cx, y: Math.round(h * 0.355), align: 'center', fill: ink,
+    fit: { maxWidth: Math.min(safeW(0.30), Math.round(w * 0.50)), minSize: 32 } }));
 
   L.push({
     type: 'repeat', over: '{{members}}', as: 'slot',
-    layout: { mode: 'arc', centerX: cx, centerY: Math.round(h * 0.78), radius: Math.round(w * 0.305),
-      startDeg: 211, endDeg: 329, spreadAt: 5, itemW, itemH },
+    layout: { mode: 'arc', centerX: cx, centerY: Math.round(h * 0.785), radius: Math.round(w * 0.25),
+      startDeg: 206, endDeg: 334, spreadAt: 5, itemW, itemH, labelOffset: Math.round(itemH * 0.62) },
     children: [
       { type: 'image', src: pack.item.body, x: '{{slot.x}}', y: '{{slot.y}}', w: '{{slot.w}}', h: '{{slot.h}}',
         tint: '{{slot.color.hex}}', opacity: 0.97 },
       // cỡ chữ và khung chữ bám theo kích thước ô đã co lại, nếu không
       // 7 cái tên sẽ chồng lên nhau khi bông tuyết tự thu nhỏ
       txt({ when: '{{slot.label}} != ', text: '{{slot.label}}', font: 'script',
-        size: '{{slot.w}} * 0.5', x: '{{slot.ox}}', y: '{{slot.oy}} + {{slot.h}} * 0.18',
-        align: 'center', fill: ink, fit: { maxWidth: '{{slot.w}} * 1.25', minSize: 13 } }),
+        size: '{{slot.w}} * 0.46', x: '{{slot.ox}}', y: '{{slot.oy}} + {{slot.h}} * 0.16',
+        align: 'center', fill: ink, fit: { maxWidth: '{{slot.w}} * 1.2', minSize: 12 } }),
     ],
   });
 
   // người tuyết vẽ sau cùng để che chân vòng bông tuyết -> có lớp lang
   if (pack.centre) {
-    const cw = Math.round(w * 0.47);
+    const cw = Math.round(w * 0.36);
     const ch = Math.round(cw / pack.centre.aspect);
-    L.push({ type: 'image', src: pack.centre.src, x: Math.round(cx - cw / 2), y: h - ch, w: cw, h: ch });
+    L.push({ type: 'image', src: pack.centre.src, x: Math.round(cx - cw / 2),
+      y: Math.round(h * 0.925 - ch), w: cw, h: ch });
   }
   return L;
 }

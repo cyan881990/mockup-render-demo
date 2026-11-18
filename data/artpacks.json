@@ -355,6 +355,10 @@
     "hex": "#222222",
     "accent": "#b02a25"
    }
-  ]
+  ],
+  "frame": {
+   "src": "wreath-ring.webp",
+   "inner": 0.355
+  }
  }
 ]
