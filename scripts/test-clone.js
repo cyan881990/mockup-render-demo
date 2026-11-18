@@ -27,6 +27,16 @@ const ok = (c, name, extra = '') => { c ? (pass++, console.log('PASS ', name, ex
   const scanned = await scan('https://example.com/products/x', { html, fetchText: async () => { throw new Error('offline'); } });
   ok(scanned.warnings.length >= 1, 'cảnh báo khi không đọc được product JSON');
 
+  // HTML thô của Shopify (app cá nhân hoá chưa chạy) không được trả ra option rác
+  const raw = fs.readFileSync(path.join(root, 'test/fixtures/shopify-raw-no-personalizer.html'), 'utf8');
+  const rawScan = await scan('https://example.com/products/y', {
+    html: raw,
+    fetchText: async () => JSON.stringify({ title: 'T', options: [{ name: 'Style', values: ['Runner Rug Only', '2 - Piece Set'] }] }),
+  });
+  ok(rawScan.personalization.length === 0, 'trang chưa render JS: không bịa option');
+  ok(/FIRECRAWL|render/i.test(rawScan.warnings.join(' ')), 'trang chưa render JS: nói rõ cần gì');
+  ok(rawScan.product?.variantOptions?.[0]?.values?.length === 2, 'vẫn lấy được biến thể giao hàng');
+
   const pack = JSON.parse(fs.readFileSync(path.join(root, 'data/artpacks.json'), 'utf8'))[0];
   const settings = JSON.parse(fs.readFileSync(path.join(root, 'data/settings.json'), 'utf8'));
   const reg = new Registry().loadAll();

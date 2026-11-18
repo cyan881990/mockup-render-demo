@@ -71,6 +71,9 @@ const CLASS_HINTS = [
   'pf-field', 'ppcp-field', 'product-option', 'option-field',
 ];
 
+const JUNK_CLASS = /jdgm|review|newsletter|footer|localization|shipping|quantity|search|cart-drawer|modal/i;
+const JUNK_LABEL = /^(quantity|rating|review|display name|your name|email|sort by|country|shipping|name format|picture|show it off|password|subscribe)/i;
+
 function optionBlocks(doc) {
   let blocks = doc.querySelectorAll('div,fieldset,li')
     .filter((el) => {
@@ -79,11 +82,22 @@ function optionBlocks(doc) {
     })
     // chỉ giữ khối ngoài cùng của mỗi option, bỏ các khối con cùng class
     .filter((el, _i, all) => !all.some((o) => o !== el && o.querySelectorAll('*').includes(el)));
-  if (!blocks.length) {
-    const form = doc.querySelector('form[action*="/cart/add"]') || doc;
-    blocks = form.querySelectorAll('label').map((l) => l.closest('div') || l.closest('fieldset') || l);
+  const fromApp = blocks.length > 0;
+  if (!fromApp) {
+    // không thấy app cá nhân hoá: chỉ dám lấy label nằm trong chính form thêm-giỏ
+    const form = doc.querySelector('form[action*="/cart/add"]');
+    blocks = form ? form.querySelectorAll('label').map((l) => l.closest('div') || l.closest('fieldset') || l) : [];
   }
-  return blocks.filter(Boolean);
+  const kept = blocks.filter(Boolean).filter((el) => {
+    let n = el, depth = 0;
+    while (n && depth++ < 8) {                       // khối nằm trong widget đánh giá/newsletter thì bỏ
+      if (JUNK_CLASS.test(n.getAttribute?.('class') || '')) return false;
+      n = n.parentNode;
+    }
+    return true;
+  });
+  kept.fromApp = fromApp;
+  return kept;
 }
 
 function labelOf(block) {
@@ -128,20 +142,29 @@ function swatchValues(block) {
   return null;
 }
 
-function parseForm(html) {
+function parseForm(html, opts = {}) {
   const doc = parse(html, { blockTextElements: { script: false, style: false } });
   const used = new Set();
   const out = [];
-  for (const block of optionBlocks(doc)) {
+  const variantValues = new Set();
+  for (const vo of opts.variantOptions || []) {
+    variantValues.add(String(vo.name || '').toLowerCase());
+    for (const v of vo.values || []) variantValues.add(String(v).toLowerCase());
+  }
+  const blocks = optionBlocks(doc);
+  out.fromApp = blocks.fromApp;
+  for (const block of blocks) {
     const label = labelOf(block);
     if (!label || label.length > 80) continue;
-    if (/^(quantity|rating|review|display name|email|sort by|country|shipping)/i.test(label)) continue;
+    if (JUNK_LABEL.test(label)) continue;
+    if (variantValues.has(label.toLowerCase())) continue;     // đây là biến thể giao hàng, không phải cá nhân hoá
 
     const input = block.querySelectorAll('input').find((i) => {
       const t = (i.getAttribute('type') || 'text').toLowerCase();
       return t === 'text' || t === 'search';
     }) || block.querySelector('textarea');
     const values = swatchValues(block);
+    if (values && values.every((v) => variantValues.has(String(v.label || '').toLowerCase()))) continue;
     const cls = block.getAttribute('class') || '';
     const required = /required/i.test(cls)
       || block.querySelectorAll('*').some((e) => /required/i.test(e.getAttribute('class') || '') || e.getAttribute('required') != null);
@@ -205,9 +228,12 @@ async function scan(url, opts = {}) {
   }
   let personalization = [];
   if (html) {
-    personalization = markIndexed(parseForm(html));
-    if (!personalization.length) {
-      warnings.push('không thấy form cá nhân hoá trong HTML — trang này dựng bằng JS, cần trình duyệt render (đặt FIRECRAWL_API_KEY hoặc truyền html sẵn)');
+    const parsed = parseForm(html, { variantOptions: product?.variantOptions });
+    personalization = markIndexed(parsed);
+    if (!parsed.fromApp) {
+      warnings.push(personalization.length
+        ? 'không nhận ra app cá nhân hoá — các option dưới đây lấy từ form thêm-giỏ, nên kiểm lại'
+        : 'không thấy form cá nhân hoá: trang dựng bằng JS nên HTML thô không có. Đặt FIRECRAWL_API_KEY (hoặc gửi kèm html đã render) rồi quét lại');
     }
   }
 
