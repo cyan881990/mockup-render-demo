@@ -217,6 +217,89 @@ app.get('/product.js', page('product.js'));
 app.get('/lab', page('lab.html'));              // bảng điều khiển render
 app.get('/lab.html', page('lab.html'));
 app.get('/app.js', page('app.js'));
+/* --------------------------------------------------------------- quét & nhân bản SKU */
+const { scan } = require('./src/scan');
+const { build } = require('./src/blueprint');
+const { propose } = require('./src/ai');
+
+/** Trang dựng bằng JS cần trình duyệt render; có FIRECRAWL_API_KEY thì đi đường đó. */
+async function fetchPage(u) {
+  const key = process.env.FIRECRAWL_API_KEY;
+  if (key && !u.endsWith('.js')) {
+    const r = await fetch('https://api.firecrawl.dev/v2/scrape', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` },
+      body: JSON.stringify({ url: u, formats: ['rawHtml'], waitFor: 6000, onlyMainContent: false }),
+      signal: AbortSignal.timeout(45000),
+    });
+    const j = await r.json().catch(() => ({}));
+    const html = j?.data?.rawHtml || j?.data?.html;
+    if (html) return html;
+  }
+  const res = await fetch(u, {
+    headers: { 'user-agent': 'Mozilla/5.0 (compatible; mockup-scanner/1.0)' },
+    signal: AbortSignal.timeout(20000),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.text();
+}
+
+app.get('/api/scan', async (req, reply) => {
+  const url = String(req.query.url || '');
+  if (!/^https?:\/\//.test(url)) return reply.code(400).send({ error: 'cần tham số url hợp lệ' });
+  try {
+    return await scan(url, { fetchText: fetchPage });
+  } catch (e) {
+    return reply.code(502).send({ error: e.message });
+  }
+});
+
+/** Dựng SKU mới từ bản đồ option đã quét. Chỉ giữ trong bộ nhớ, không ghi đè catalogue. */
+const drafts = new Map();                       // id -> { at, product, design }
+app.post('/api/clone', async (req, reply) => {
+  const b = req.body || {};
+  if (!b.url && !b.html) return reply.code(400).send({ error: 'cần url hoặc html' });
+  try {
+    const scanned = await scan(b.url || 'https://example.com/products/offline',
+      { html: b.html, fetchText: b.html ? async () => { throw new Error('offline'); } : fetchPage });
+    const packs = registry.artpacks || JSON.parse(fs.readFileSync(path.join(__dirname, 'data/artpacks.json'), 'utf8'));
+    const pack = packs.find((p) => p.id === (b.pack || packs[0].id));
+    if (!pack) return reply.code(400).send({ error: 'không có gói hoạ tiết đó' });
+
+    let ai = {};
+    if (b.ai) ai = await propose({ scan: scanned, pack, productType: b.type || 'poster', seed: Number(b.seed) || 0 });
+
+    const built = build(scanned, {
+      pack, productType: b.type, layout: b.layout || ai.layout,
+      backgrounds: ai.backgrounds, title: b.title || ai.title,
+      copy: { headline: b.headline || ai.headline },
+    });
+    const fit = [...registry.mockups.values()]
+      .filter((m) => (m.productTypes || []).includes(built.product.type)).map((m) => m.id);
+    built.product.mockups = fit;
+    built.product.defaultMockup = fit[0];
+
+    // nạp tạm để render thử; dọn bản cũ sau 30 phút
+    const now = Date.now();
+    for (const [id, d] of drafts) if (now - d.at > 30 * 60e3) { drafts.delete(id); registry.products.delete(id); }
+    registry.products.set(built.product.id, { ...built.product, hash: 'draft' });
+    registry.designs.set(built.design.id, { ...built.design, hash: `draft-${now}` });
+    drafts.set(built.product.id, { at: now, ...built });
+
+    return {
+      scanned: { title: scanned.product?.title, options: scanned.personalization, warnings: scanned.warnings },
+      product: built.product,
+      design: built.design,
+      ai: b.ai ? { source: ai.source, title: ai.title, headline: ai.headline, error: ai.error } : null,
+      preview: fit.map((m) => `/render?product=${built.product.id}&mockup=${m}&w=1000`),
+      artwork: `/artwork/${built.product.id}?w=1600&format=png`,
+      note: 'Bản nháp chỉ nằm trong bộ nhớ của tiến trình này. Lưu lại bằng cách thêm product/design vào data/*.json rồi deploy.',
+    };
+  } catch (e) {
+    return reply.code(500).send({ error: e.message });
+  }
+});
+
 app.get('/assets/*', (req, reply) => serveStatic(reply, path.join(__dirname, 'assets'), req.params['*'], 'public, max-age=3600'));
 
 // ------------------------------------------------------------------- bootstrap

@@ -1,0 +1,49 @@
+[
+  {
+    "id": "xmas-knit",
+    "name": "Giáng sinh — len & lá thông",
+    "header": { "src": "garland-top.webp", "aspect": 6.35 },
+    "headerArc": { "src": "garland.webp", "aspect": 2.6 },
+    "corner": { "src": "sprig.webp", "aspect": 0.98 },
+    "item": { "body": "stocking2-body.webp", "cuff": "stocking2-cuff.webp", "aspect": 0.411, "labelAt": 0.268 },
+    "pets": [
+      { "value": "none", "label": "No pet", "hex": "#000000" },
+      { "value": "dog", "label": "Dog", "hex": "#e8d7b4", "art": "pet-dog2" },
+      { "value": "cat", "label": "Cat", "hex": "#e8d7b4", "art": "pet-cat2" }
+    ],
+    "itemColours": [
+      { "value": "red", "label": "Red", "hex": "#c0352b", "aliases": ["do"] },
+      { "value": "green", "label": "Green", "hex": "#2f7d4f", "aliases": ["xanhla"] },
+      { "value": "blue", "label": "Blue", "hex": "#2f6ea8", "aliases": ["xanh"] },
+      { "value": "gold", "label": "Gold", "hex": "#d7a54a" },
+      { "value": "cream", "label": "Cream", "hex": "#efe3c8" },
+      { "value": "pink", "label": "Pink", "hex": "#d98aa0" },
+      { "value": "plum", "label": "Plum", "hex": "#6f3b6e" },
+      { "value": "teal", "label": "Teal", "hex": "#2b7f80" },
+      { "value": "rust", "label": "Rust", "hex": "#b4551f" },
+      { "value": "forest", "label": "Forest", "hex": "#1f4d33" },
+      { "value": "wine", "label": "Wine", "hex": "#7d1f36" },
+      { "value": "slate", "label": "Slate", "hex": "#4a5a68" },
+      { "value": "sand", "label": "Sand", "hex": "#c9a97a" },
+      { "value": "ice", "label": "Ice", "hex": "#a8c6d8" },
+      { "value": "berry", "label": "Berry", "hex": "#a33b62" },
+      { "value": "moss", "label": "Moss", "hex": "#6b7a3a" }
+    ],
+    "backgrounds": [
+      { "value": "red", "label": "Classic Red", "hex": "#8d1d1d", "ink": "#f7e8c8", "accent": "#d8b26a" },
+      { "value": "green", "label": "Pine Green", "hex": "#14512f", "ink": "#f4ead3", "accent": "#d8b26a" },
+      { "value": "navy", "label": "Winter Navy", "hex": "#152a4a", "ink": "#eef3fa", "accent": "#9fc2e8" },
+      { "value": "cream", "label": "Warm Cream", "hex": "#e9ddc4", "ink": "#6d2020", "accent": "#a8542c" },
+      { "value": "charcoal", "label": "Charcoal", "hex": "#272a2b", "ink": "#f2efe9", "accent": "#c79a4f" },
+      { "value": "burgundy", "label": "Burgundy", "hex": "#5c1230", "ink": "#f6e2e8", "accent": "#e0a3b4" },
+      { "value": "forest", "label": "Deep Forest", "hex": "#16352a", "ink": "#efe6cf", "accent": "#c0a461" },
+      { "value": "plaid", "label": "Warm Clay", "hex": "#7a3b2e", "ink": "#f6e6cf", "accent": "#e2b979" }
+    ],
+    "inks": [
+      { "value": "red", "label": "Red", "hex": "#b02a25", "accent": "#2f7d4f" },
+      { "value": "green", "label": "Green", "hex": "#1f6b40", "accent": "#b02a25" },
+      { "value": "navy", "label": "Navy", "hex": "#1d3a63", "accent": "#c79a4f" },
+      { "value": "black", "label": "Black", "hex": "#222222", "accent": "#b02a25" }
+    ]
+  }
+]
