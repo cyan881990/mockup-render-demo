@@ -47,7 +47,8 @@ function vectorBBox(layer, scope, fonts, canvas) {
       const fontId = fonts.pick(resolve(layer.font, scope) || 'default', text).id;
       let size = num(layer.size, scope, 48);
       const maxWidth = layer.fit ? num(layer.fit.maxWidth, scope, 0) : 0;
-      let w = fonts.measure(fontId, text, size);
+      const tracking = layer.letterSpacing ? num(layer.letterSpacing, scope, 0) : 0;
+      let w = fonts.measure(fontId, text, size, tracking);
       if (maxWidth && w > maxWidth) { size = Math.max(num(layer.fit.minSize, scope, 10), (maxWidth / w) * size); w = maxWidth; }
       const lines = layer.wrap ? Math.max(1, num(layer.wrap.maxLines, scope, 2)) : 1;
       const m = fonts.metrics(fontId, size);
@@ -96,6 +97,34 @@ function flatten(layers, scope, fonts, canvas, out = []) {
       const centerX = num(lay.centerX, scope, 0), baselineY = num(lay.baselineY, scope, 0);
       const startX = centerX - total / 2;
       const as = layer.as || 'slot';
+
+      if (lay.mode === 'arc') {
+        // rải đều trên một cung tròn — dùng cho mặt in tròn (ornament, đĩa, huy hiệu)
+        const cx0 = num(lay.centerX, scope, canvas.w / 2);
+        const cy0 = num(lay.centerY, scope, canvas.h / 2);
+        const radius = num(lay.radius, scope, Math.min(canvas.w, canvas.h) * 0.33);
+        const a0 = num(lay.startDeg, scope, 200) * Math.PI / 180;
+        const a1 = num(lay.endDeg, scope, 340) * Math.PI / 180;
+        // cung hẹp lại khi ít vật phẩm, để chúng không nằm thưa thớt
+        const spanK = Math.min(1, (n - 1) / Math.max(1, num(lay.spreadAt, scope, 5) - 1));
+        const mid = (a0 + a1) / 2;
+        const lo = n === 1 ? mid : mid - (mid - a0) * spanK;
+        const hi = n === 1 ? mid : mid + (a1 - mid) * spanK;
+        items.forEach((item, idx) => {
+          const t = n === 1 ? 0.5 : idx / (n - 1);
+          const ang = lo + (hi - lo) * t;
+          const cx = cx0 + Math.cos(ang) * radius;
+          const cy = cy0 + Math.sin(ang) * radius;
+          const slot = {
+            ...item, idx, i: idx + 1, n, w, h,
+            x: cx - w / 2, y: cy - h / 2, cx, cy, bottom: cy + h / 2,
+            angle: ang * 180 / Math.PI,
+          };
+          flatten(layer.children, { ...scope, [as]: slot }, fonts, canvas, out);
+        });
+        continue;
+      }
+
       items.forEach((item, idx) => {
         const x = startX + idx * (w + gap);
         const stagger = lay.stagger ? num(lay.stagger, scope, 0) * (idx % 2 === 0 ? -1 : 1) : 0;

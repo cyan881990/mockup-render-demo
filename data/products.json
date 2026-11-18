@@ -1,36 +1,113 @@
 [
-  {
-    "id": "runner-rug-xma011102",
-    "title": "Christmas Together Personalized Runner Rug",
-    "handle": "christmas-together-personalized-runner-rug-xma011102vupg",
-    "handles": ["christmas-together-personalized-runner-rug"],
-    "type": "runner-rug",
-    "designId": "xmas-together-runner",
-    "mockups": ["rug-hallway", "rug-flatlay"],
-    "defaultMockup": "rug-hallway",
-    "match": { "sku": ["xma011102"], "keywords": ["runner", "rug", "christmas"] },
-    "paramAliases": { "members": "member", "bg": "background", "familyname": "name", "sock1": "soc1", "sock2": "soc2", "sock3": "soc3" }
+ {
+  "id": "runner-rug-xma011102",
+  "title": "Christmas Together Personalized Runner Rug",
+  "handle": "christmas-together-personalized-runner-rug-xma011102vupg",
+  "handles": [
+   "christmas-together-personalized-runner-rug"
+  ],
+  "type": "runner-rug",
+  "designId": "xmas-together-runner",
+  "mockups": [
+   "rug-hallway",
+   "rug-flatlay"
+  ],
+  "defaultMockup": "rug-hallway",
+  "match": {
+   "sku": [
+    "xma011102"
+   ],
+   "keywords": [
+    "runner",
+    "rug",
+    "christmas"
+   ]
   },
-  {
-    "id": "mug-xma011103",
-    "title": "Christmas Together Personalized Mug",
-    "handle": "christmas-together-personalized-mug-xma011103vupg",
-    "type": "mug",
-    "designId": "xmas-family-mug",
-    "mockups": ["mug-desk"],
-    "defaultMockup": "mug-desk",
-    "match": { "sku": ["xma011103"], "keywords": ["mug", "christmas"] },
-    "paramAliases": { "members": "member", "color": "ink" }
-  },
-  {
-    "id": "tee-xma011104",
-    "title": "Christmas Together Personalized T-Shirt",
-    "handle": "christmas-together-personalized-t-shirt-xma011104vupg",
-    "type": "tee",
-    "designId": "xmas-family-tee",
-    "mockups": ["tee-flatlay"],
-    "defaultMockup": "tee-flatlay",
-    "match": { "sku": ["xma011104"], "keywords": ["shirt", "tee", "christmas"] },
-    "paramAliases": { "members": "member", "color": "ink" }
+  "paramAliases": {
+   "members": "member",
+   "bg": "background",
+   "familyname": "name",
+   "sock1": "soc1",
+   "sock2": "soc2",
+   "sock3": "soc3"
   }
+ },
+ {
+  "id": "mug-xma011103",
+  "title": "Christmas Together Personalized Mug",
+  "handle": "christmas-together-personalized-mug-xma011103vupg",
+  "type": "mug",
+  "designId": "xmas-family-mug",
+  "mockups": [
+   "mug-desk"
+  ],
+  "defaultMockup": "mug-desk",
+  "match": {
+   "sku": [
+    "xma011103"
+   ],
+   "keywords": [
+    "mug",
+    "christmas"
+   ]
+  },
+  "paramAliases": {
+   "members": "member",
+   "color": "ink"
+  }
+ },
+ {
+  "id": "tee-xma011104",
+  "title": "Christmas Together Personalized T-Shirt",
+  "handle": "christmas-together-personalized-t-shirt-xma011104vupg",
+  "type": "tee",
+  "designId": "xmas-family-tee",
+  "mockups": [
+   "tee-flatlay"
+  ],
+  "defaultMockup": "tee-flatlay",
+  "match": {
+   "sku": [
+    "xma011104"
+   ],
+   "keywords": [
+    "shirt",
+    "tee",
+    "christmas"
+   ]
+  },
+  "paramAliases": {
+   "members": "member",
+   "color": "ink"
+  }
+ },
+ {
+  "id": "grandkids-snowflake-ornament",
+  "title": "Grandkids Snowflakes — Wooden Ornament",
+  "handle": "grandkids-snowflakes-wooden-ornament",
+  "type": "ornament",
+  "designId": "snow-grandkids-ornament",
+  "mockups": [
+   "ornament-tree"
+  ],
+  "defaultMockup": "ornament-tree",
+  "match": {
+   "sku": [
+    "orn-snowflake"
+   ],
+   "keywords": [
+    "ornament",
+    "snowflake",
+    "grandkids",
+    "snowman"
+   ]
+  },
+  "paramAliases": {
+   "members": "member",
+   "flakes": "member",
+   "grandkids": "member",
+   "bg": "background",
+   "grandma": "name"
+  }
+ }
 ]

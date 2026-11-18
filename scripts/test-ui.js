@@ -45,8 +45,8 @@ const BASE = process.env.BASE || 'http://localhost:3000';
     $$(`nav button`).find((b) => b.dataset.tab === tab).dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
     await wait(700);
   }
-  check('mockups tab populated', $$('#mockupList .card').length === 4, `${$$('#mockupList .card').length} cards`);
-  check('designs tab populated', $$('#designList .card').length === 3, `${$$('#designList .card').length} cards`);
+  check('mockups tab populated', $$('#mockupList .card').length >= 4, `${$$('#mockupList .card').length} cards`);
+  check('designs tab populated', $$('#designList .card').length >= 3, `${$$('#designList .card').length} cards`);
   check('fonts tab populated', $$('#fontList tbody tr').length === 13, `${$$('#fontList tbody tr').length} rows`);
   check('metrics tab populated', $$('#metricCards .card').length === 4, '');
   check('no uncaught JS errors', errors.length === 0, errors.join(' | '));

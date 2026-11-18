@@ -107,7 +107,63 @@ function stack({ canvas, pack, ink, accent, bg, has }) {
   return L;
 }
 
-const LAYOUTS = { banner, stack };
+/**
+ * "round" — mặt in tròn (ornament, đĩa, huy hiệu): vòng viền, dòng chữ trên,
+ * nhân vật chính ở giữa dưới, các vật phẩm theo tên rải trên một cung tròn.
+ */
+function round({ canvas, pack, ink, accent, bg, has }) {
+  const { w, h } = canvas;
+  const cx = w / 2;
+  // mặt in tròn: càng xa tâm theo chiều dọc thì bề ngang dùng được càng hẹp.
+  // Không tính cái này là chữ tràn qua mép đĩa.
+  const R = w * 0.45;
+  const safeW = (yFrac, k = 0.92) =>
+    Math.round(2 * Math.sqrt(Math.max(0, R * R - Math.pow(yFrac * h - h / 2, 2))) * k);
+
+  const itemW = Math.round(w * 0.095);
+  const itemH = Math.round(itemW / (pack.item.aspect || 1));
+  const L = [];
+  L.push({ type: 'ellipse', cx, cy: h / 2, rx: Math.round(w / 2 - 34), ry: Math.round(h / 2 - 34),
+    fill: 'none', stroke: accent, strokeWidth: 6, opacity: 0.8 });
+  L.push({ type: 'ellipse', cx, cy: h / 2, rx: Math.round(w / 2 - 52), ry: Math.round(h / 2 - 52),
+    fill: 'none', stroke: accent, strokeWidth: 2, opacity: 0.5 });
+  L.push({ type: 'pattern', src: 'snow.png', size: Math.round(w * 0.2), opacity: 0.1, w, h });
+
+  if (has.headline) {
+    L.push(txt({ text: '{{opt.headline}}', font: 'slab', size: Math.round(w * 0.046),
+      x: cx, y: Math.round(h * 0.185), align: 'center', fill: accent, letterSpacing: 8,
+      transformText: 'upper', fit: { maxWidth: safeW(0.155), minSize: 18 } }));
+  }
+  L.push(txt({ text: '{{opt.name}}', font: 'script', size: Math.round(w * 0.105),
+    x: cx, y: Math.round(h * 0.315), align: 'center', fill: ink,
+    fit: { maxWidth: safeW(0.345), minSize: 38 } }));
+  if (has.year) {
+    L.push(txt({ when: '{{opt.year}} != ', text: '{{opt.year}}', font: 'heading',
+      size: Math.round(w * 0.028), x: cx, y: Math.round(h * 0.385), align: 'center',
+      fill: accent, letterSpacing: 8, opacity: 0.9, fit: { maxWidth: safeW(0.385, 0.6), minSize: 14 } }));
+  }
+  if (pack.centre) {
+    const cw = Math.round(w * 0.21);
+    L.push({ type: 'image', src: pack.centre.src, x: Math.round(cx - cw / 2),
+      y: Math.round(h * 0.88) - Math.round(cw / pack.centre.aspect), w: cw,
+      h: Math.round(cw / pack.centre.aspect) });
+  }
+  L.push({
+    type: 'repeat', over: '{{members}}', as: 'slot',
+    layout: { mode: 'arc', centerX: cx, centerY: Math.round(h * 0.80), radius: Math.round(w * 0.33),
+      startDeg: 210, endDeg: 330, spreadAt: 5, itemW, itemH },
+    children: [
+      { type: 'image', src: pack.item.body, x: '{{slot.x}}', y: '{{slot.y}}', w: '{{slot.w}}', h: '{{slot.h}}',
+        tint: '{{slot.color.hex}}' },
+      txt({ when: '{{slot.label}} != ', text: '{{slot.label}}', font: 'script',
+        size: Math.round(itemW * 0.46), x: '{{slot.cx}}', y: '{{slot.y}} + {{slot.h}} * 1.24',
+        align: 'center', fill: ink, fit: { maxWidth: '{{slot.w}} * 1.5', minSize: 13 } }),
+    ],
+  });
+  return L;
+}
+
+const LAYOUTS = { banner, stack, round };
 
 /** Khổ nào thì hợp khuôn nào. */
 function pickLayout(canvas) { return canvas.w / canvas.h >= 2 ? 'banner' : 'stack'; }

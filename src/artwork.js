@@ -158,6 +158,7 @@ class SvgBuilder {
     else if (chosen.uncovered) this.warnings.push(`no registered font covers "${text.slice(0, 24)}"`);
     let size = num(l.size, s, 48);
     const maxWidth = l.fit ? num(l.fit.maxWidth, s, 0) : 0;
+    const tracking = l.letterSpacing ? num(l.letterSpacing, s, 0) : 0;
     const upper = l.transformText === 'upper';
     if (upper) text = text.toUpperCase();
 
@@ -167,12 +168,12 @@ class SvgBuilder {
       lines = this.fonts.wrap(fontId, text, size, w, num(l.wrap.maxLines, s, 2));
       if (lines.length > 1) {
         // shrink so the widest wrapped line fits too
-        const widest = Math.max(...lines.map((ln) => this.fonts.measure(fontId, ln, size)));
+        const widest = Math.max(...lines.map((ln) => this.fonts.measure(fontId, ln, size, tracking)));
         if (w && widest > w) size = Math.max(num(l.fit?.minSize, s, 10), (w / widest) * size);
       }
     }
     if (maxWidth) {
-      const widest = Math.max(...lines.map((ln) => this.fonts.measure(fontId, ln, size)));
+      const widest = Math.max(...lines.map((ln) => this.fonts.measure(fontId, ln, size, tracking)));
       if (widest > maxWidth) size = Math.max(num(l.fit.minSize, s, 10), (maxWidth / widest) * size);
     }
 

@@ -215,12 +215,14 @@ def segment_flat(img, sat_max=0.22, v_lo=0.30, v_hi=0.97, border_margin=0.0):
     return m
 
 
-def write_scene(name, img, mask, quad, out, size, light_gamma=1.0, light_range=(55, 205)):
+def write_scene(name, img, mask, quad, out, size, light_gamma=1.0, light_range=(55, 205), round_face=False):
     os.makedirs(out, exist_ok=True)
     img = img.convert('RGB').resize(size, Image.LANCZOS)
     mk = Image.fromarray((mask * 255).astype(np.uint8)).resize(size, Image.LANCZOS)
-    # mặt in luôn thuộc vùng sản phẩm: lấp mọi lỗ do dò nền bỏ sót
-    ImageDraw.Draw(mk).polygon([tuple(p) for p in quad], fill=255)
+    # mặt in luôn thuộc vùng sản phẩm: lấp mọi lỗ do dò nền bỏ sót.
+    # Mặt tròn thì bỏ qua, nếu không góc vuông của quad sẽ ăn ra ngoài đĩa.
+    if not round_face:
+        ImageDraw.Draw(mk).polygon([tuple(p) for p in quad], fill=255)
     mk = mk.filter(ImageFilter.GaussianBlur(1.2))
     img.save(os.path.join(out, 'base.jpg'), quality=88, optimize=True, progressive=True)
     mk.save(os.path.join(out, 'mask.png'), optimize=True)
@@ -267,6 +269,26 @@ def do_mug(raw_name, out_name, size):
          [x1 - inset_x, y1 - inset_y], [x0 + inset_x, y1 - inset_y]]
     q = scale_quad(q, img.size, size)
     return write_scene(out_name, img, mb, q, os.path.join(MOCK, out_name), size, light_gamma=1.0)
+
+
+def do_ornament(raw_name, out_name, size, sat_max=0.38, v_lo=0.55):
+    """Mặt in tròn: mask là chính cái đĩa, 4 góc lấy theo khung bao của đĩa —
+    hoạ tiết vuông đổ vào khung đó rồi bị mask cắt thành hình tròn."""
+    img = load(raw_name).convert('RGB')
+    m = segment_flat(img, sat_max=sat_max, v_lo=v_lo, v_hi=1.01)
+    m = ndimage.binary_opening(m, np.ones((21, 21)))     # rụng mẩu ruy-băng/ánh sáng dính vào đĩa
+    lab, n = ndimage.label(m)
+    if n > 1:
+        sizes = ndimage.sum(m, lab, range(1, n + 1))
+        m = lab == (np.argmax(sizes) + 1)
+    m = ndimage.binary_fill_holes(m)
+    # tâm = trọng tâm, bán kính suy từ diện tích -> không lệch vì vài mẩu thừa ở rìa
+    ys, xs = np.where(m)
+    cx, cy = float(xs.mean()), float(ys.mean())
+    r = float(np.sqrt(m.sum() / np.pi)) * 0.985
+    q = [[cx - r, cy - r], [cx + r, cy - r], [cx + r, cy + r], [cx - r, cy + r]]
+    q = scale_quad(q, img.size, size)
+    return write_scene(out_name, img, m, q, os.path.join(MOCK, out_name), size, light_gamma=1.0, round_face=True)
 
 
 def do_tee(raw_name, out_name, size):

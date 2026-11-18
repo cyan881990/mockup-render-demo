@@ -750,5 +750,287 @@
     "opacity": 0.85
    }
   ]
+ },
+ {
+  "id": "snow-grandkids-ornament",
+  "name": "Grandkids Snowflakes — Wooden Ornament",
+  "canvas": {
+   "w": 1200,
+   "h": 1200,
+   "bg": "{{opt.background.hex}}"
+  },
+  "assetDir": "art",
+  "defaultFontFamily": "Outfit",
+  "source": {
+   "scannedFrom": "https://printourstory.com/products/personalized-grandchildren-snowman-ornament",
+   "layout": "round",
+   "artPack": "snow-keepsake"
+  },
+  "options": [
+   {
+    "key": "background",
+    "label": "Choose Background",
+    "type": "swatch",
+    "default": "night",
+    "values": [
+     {
+      "value": "night",
+      "label": "Winter Night",
+      "hex": "#17314f",
+      "ink": "#f3f7fb",
+      "accent": "#d8b26a"
+     },
+     {
+      "value": "teal",
+      "label": "Frosted Teal",
+      "hex": "#17514f",
+      "ink": "#eef7f4",
+      "accent": "#e2c179"
+     },
+     {
+      "value": "red",
+      "label": "Classic Red",
+      "hex": "#8d1d1d",
+      "ink": "#f7e8c8",
+      "accent": "#e2c179"
+     },
+     {
+      "value": "cream",
+      "label": "Warm Cream",
+      "hex": "#eadfc8",
+      "ink": "#2d4257",
+      "accent": "#a8542c"
+     },
+     {
+      "value": "sage",
+      "label": "Soft Sage",
+      "hex": "#53634f",
+      "ink": "#f4f1e4",
+      "accent": "#e0cf9a"
+     },
+     {
+      "value": "plum",
+      "label": "Winter Plum",
+      "hex": "#432a4d",
+      "ink": "#f4ecf7",
+      "accent": "#d8b26a"
+     },
+     {
+      "value": "charcoal",
+      "label": "Charcoal",
+      "hex": "#272a2b",
+      "ink": "#f2efe9",
+      "accent": "#c79a4f"
+     }
+    ]
+   },
+   {
+    "key": "headline",
+    "label": "Top Line",
+    "type": "text",
+    "maxLength": 24,
+    "default": "Grandma's Snowflakes",
+    "upper": true
+   },
+   {
+    "key": "name",
+    "label": "Grandparent Name",
+    "type": "text",
+    "maxLength": 20,
+    "default": "Grandma Lan"
+   },
+   {
+    "key": "member",
+    "label": "Number Of Snowflakes",
+    "type": "range",
+    "min": 1,
+    "max": 7,
+    "default": 3
+   },
+   {
+    "key": "soc",
+    "label": "Snowflake Colour",
+    "type": "swatch",
+    "indexed": {
+     "by": "member",
+     "from": 1,
+     "max": 7
+    },
+    "as": "color",
+    "allowCustomHex": true,
+    "default": "white",
+    "values": [
+     {
+      "value": "white",
+      "label": "Snow White",
+      "hex": "#ffffff"
+     },
+     {
+      "value": "ice",
+      "label": "Ice Blue",
+      "hex": "#cfe4f2"
+     },
+     {
+      "value": "silver",
+      "label": "Silver",
+      "hex": "#dfe4e8"
+     },
+     {
+      "value": "gold",
+      "label": "Gold",
+      "hex": "#e8c478"
+     }
+    ]
+   },
+   {
+    "key": "mname",
+    "label": "Grandchild Name",
+    "type": "text",
+    "indexed": {
+     "by": "member",
+     "from": 1,
+     "max": 7
+    },
+    "maxLength": 12,
+    "default": "",
+    "as": "label"
+   },
+   {
+    "key": "year",
+    "label": "Year",
+    "type": "text",
+    "maxLength": 4,
+    "default": "2026"
+   }
+  ],
+  "layers": [
+   {
+    "type": "ellipse",
+    "cx": 600,
+    "cy": 600,
+    "rx": 566,
+    "ry": 566,
+    "fill": "none",
+    "stroke": "{{opt.background.accent}}",
+    "strokeWidth": 6,
+    "opacity": 0.8
+   },
+   {
+    "type": "ellipse",
+    "cx": 600,
+    "cy": 600,
+    "rx": 548,
+    "ry": 548,
+    "fill": "none",
+    "stroke": "{{opt.background.accent}}",
+    "strokeWidth": 2,
+    "opacity": 0.5
+   },
+   {
+    "type": "pattern",
+    "src": "snow.png",
+    "size": 240,
+    "opacity": 0.1,
+    "w": 1200,
+    "h": 1200
+   },
+   {
+    "type": "text",
+    "text": "{{opt.headline}}",
+    "font": "slab",
+    "size": 55,
+    "x": 600,
+    "y": 222,
+    "align": "center",
+    "fill": "{{opt.background.accent}}",
+    "letterSpacing": 8,
+    "transformText": "upper",
+    "fit": {
+     "maxWidth": 638,
+     "minSize": 18
+    }
+   },
+   {
+    "type": "text",
+    "text": "{{opt.name}}",
+    "font": "script",
+    "size": 126,
+    "x": 600,
+    "y": 378,
+    "align": "center",
+    "fill": "{{opt.background.ink}}",
+    "fit": {
+     "maxWidth": 933,
+     "minSize": 38
+    }
+   },
+   {
+    "type": "text",
+    "when": "{{opt.year}} != ",
+    "text": "{{opt.year}}",
+    "font": "heading",
+    "size": 34,
+    "x": 600,
+    "y": 462,
+    "align": "center",
+    "fill": "{{opt.background.accent}}",
+    "letterSpacing": 8,
+    "opacity": 0.9,
+    "fit": {
+     "maxWidth": 626,
+     "minSize": 14
+    }
+   },
+   {
+    "type": "image",
+    "src": "snowman.webp",
+    "x": 474,
+    "y": 749,
+    "w": 252,
+    "h": 307
+   },
+   {
+    "type": "repeat",
+    "over": "{{members}}",
+    "as": "slot",
+    "layout": {
+     "mode": "arc",
+     "centerX": 600,
+     "centerY": 960,
+     "radius": 396,
+     "startDeg": 210,
+     "endDeg": 330,
+     "spreadAt": 5,
+     "itemW": 114,
+     "itemH": 143
+    },
+    "children": [
+     {
+      "type": "image",
+      "src": "snowflake.webp",
+      "x": "{{slot.x}}",
+      "y": "{{slot.y}}",
+      "w": "{{slot.w}}",
+      "h": "{{slot.h}}",
+      "tint": "{{slot.color.hex}}"
+     },
+     {
+      "type": "text",
+      "when": "{{slot.label}} != ",
+      "text": "{{slot.label}}",
+      "font": "script",
+      "size": 52,
+      "x": "{{slot.cx}}",
+      "y": "{{slot.y}} + {{slot.h}} * 1.24",
+      "align": "center",
+      "fill": "{{opt.background.ink}}",
+      "fit": {
+       "maxWidth": "{{slot.w}} * 1.5",
+       "minSize": 13
+      }
+     }
+    ]
+   }
+  ]
  }
 ]

@@ -162,5 +162,44 @@
   "blend": {
    "lightStrength": 1.0
   }
+ },
+ {
+  "id": "ornament-tree",
+  "name": "Ornament gỗ — trên cây thông",
+  "productTypes": [
+   "ornament"
+  ],
+  "base": "mockups/ornament-tree/base.jpg",
+  "mask": "mockups/ornament-tree/mask.png",
+  "light": "mockups/ornament-tree/light.jpg",
+  "size": [
+   1200,
+   1200
+  ],
+  "previewWidth": 800,
+  "surface": {
+   "type": "quad",
+   "points": [
+    [
+     250,
+     316
+    ],
+    [
+     940,
+     316
+    ],
+    [
+     940,
+     1006
+    ],
+    [
+     250,
+     1006
+    ]
+   ]
+  },
+  "blend": {
+   "lightStrength": 1.0
+  }
  }
 ]

@@ -87,15 +87,22 @@ class FontRegistry {
     return [...this.byId.values()].map(({ kit, file, ...rest }) => ({ ...rest, file: path.basename(file) }));
   }
 
-  /** Width of `text` in px at `size`, using real glyph advances + kerning. */
-  measure(id, text, size) {
+  /**
+   * Width of `text` in px at `size`, using real glyph advances + kerning.
+   * `tracking` là letter-spacing (px) — phải cộng vào, nếu không dòng chữ giãn
+   * chữ sẽ rộng hơn khung cho phép và tràn ra ngoài mặt in.
+   */
+  measure(id, text, size, tracking = 0) {
     const f = this.get(id);
-    if (!f || !f.kit || !text) return 0;
+    if (!text) return 0;
+    const n = [...String(text)].length;
+    const extra = tracking ? tracking * Math.max(0, n - 1) : 0;
+    if (!f || !f.kit) return n * size * 0.55 + extra;
     try {
       const run = f.kit.layout(String(text));
-      return (run.advanceWidth / f.kit.unitsPerEm) * size;
+      return (run.advanceWidth / f.kit.unitsPerEm) * size + extra;
     } catch {
-      return String(text).length * size * 0.55;
+      return n * size * 0.55 + extra;
     }
   }
 
@@ -113,9 +120,9 @@ class FontRegistry {
   }
 
   /** Largest size <= maxSize that keeps `text` within maxWidth (and >= minSize). */
-  fitSize(id, text, maxSize, maxWidth, minSize = 8) {
+  fitSize(id, text, maxSize, maxWidth, minSize = 8, tracking = 0) {
     if (!maxWidth) return maxSize;
-    const w = this.measure(id, text, maxSize);
+    const w = this.measure(id, text, maxSize, tracking);
     if (w <= maxWidth || w === 0) return maxSize;
     return Math.max(minSize, Math.floor((maxWidth / w) * maxSize * 100) / 100);
   }

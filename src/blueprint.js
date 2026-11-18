@@ -53,7 +53,12 @@ function mapOptions(scanned, pack, copy) {
       out.push({ ...base, type: 'range', min: 1, max: Math.min(o.max || 6, 10), default: Math.min(3, o.max || 3) });
     } else if (o.type === 'text') {
       const d = copy[o.key] ?? '';
-      out.push({ ...base, type: 'text', maxLength: o.maxLength || 24, default: d, ...(o.key === 'headline' ? { upper: true } : {}) });
+      out.push({
+        ...base, type: 'text', maxLength: o.maxLength || 24, default: d,
+        // ô chữ lặp theo số người -> đổ vào nhãn của từng vật phẩm
+        ...(o.indexed ? { as: 'label' } : {}),
+        ...(o.key === 'headline' ? { upper: true } : {}),
+      });
     } else if (o.key === 'background') {
       const vals = pack.backgrounds.slice(0, Math.max(3, Math.min(o.count || 6, pack.backgrounds.length)));
       out.push({ ...base, type: 'swatch', default: vals[0].value, values: vals });
@@ -102,7 +107,7 @@ function build(scanResult, opts = {}) {
     scanned.push({ key: 'year', label: 'Year', type: 'text', maxLength: 4 });
   }
 
-  const transparent = ['mug', 'tee', 'ornament'].includes(type);
+  const transparent = ['mug', 'tee'].includes(type);   // ornament gỗ in kín mặt đĩa nên vẫn có màu nền
   // sản phẩm in trên nền vải/sứ trắng thì không có "màu nền" — đổi thành "màu mực",
   // nếu không chữ sẽ lấy màu sáng của bảng nền và mất hút trên nền trắng
   if (transparent) {
@@ -119,7 +124,7 @@ function build(scanResult, opts = {}) {
 
   const ink = bgOpt ? '{{opt.background.ink}}' : '{{opt.ink.hex}}';
   const accent = bgOpt ? '{{opt.background.accent}}' : '{{opt.ink.accent}}';
-  const layoutId = opts.layout || pickLayout(canvas);
+  const layoutId = opts.layout || (type === 'ornament' ? 'round' : pickLayout(canvas));
   const layers = LAYOUTS[layoutId]({ canvas, pack, ink, accent, bg: !!bgOpt, has });
 
   const title = opts.title || `${copy.headline} — ${type.replace('-', ' ')}`;
