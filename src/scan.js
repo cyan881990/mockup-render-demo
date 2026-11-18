@@ -10,7 +10,7 @@
  *   2. HTML đã render                   -> form cá nhân hoá (Teeinblue, Customily,
  *                                          Kickflip, hoặc form thuần của theme)
  */
-const { JSDOM } = require('jsdom');
+const { parse } = require('node-html-parser');   // CJS, nhẹ — jsdom kéo theo gói ESM-only làm sập runtime
 
 const clean = (s) => String(s || '').replace(/\s+/g, ' ').trim();
 
@@ -63,30 +63,41 @@ function parseShopify(json) {
 
 /* ------------------------------------------------- personalization form */
 /** Mỗi "ô option" = một nhãn + một vùng điều khiển. Hỗ trợ nhiều app khác nhau. */
+const CLASS_HINTS = [
+  'ant-form-item',            // Teeinblue
+  'customily-option',         // Customily
+  'kickflip-field',           // Kickflip
+  'product-personalizer-field',
+  'pf-field', 'ppcp-field', 'product-option', 'option-field',
+];
+
 function optionBlocks(doc) {
-  const sel = [
-    '.ant-form-item',                  // Teeinblue
-    '[class*="customily-option"]',     // Customily
-    '[class*="kickflip-field"]',       // Kickflip
-    '.product-personalizer-field',     // Product Personalizer
-    '.pf-field', '.ppcp-field',
-  ].join(',');
-  let blocks = [...doc.querySelectorAll(sel)];
+  let blocks = doc.querySelectorAll('div,fieldset,li')
+    .filter((el) => {
+      const c = el.getAttribute('class') || '';
+      return CLASS_HINTS.some((h) => c.includes(h));
+    })
+    // chỉ giữ khối ngoài cùng của mỗi option, bỏ các khối con cùng class
+    .filter((el, _i, all) => !all.some((o) => o !== el && o.querySelectorAll('*').includes(el)));
   if (!blocks.length) {
-    // form thuần của theme: lấy mọi label có control đi kèm trong form add-to-cart
-    const form = doc.querySelector('form[action*="/cart/add"]') || doc.body;
-    blocks = [...form.querySelectorAll('label')].map((l) => l.closest('div,fieldset,li') || l);
+    const form = doc.querySelector('form[action*="/cart/add"]') || doc;
+    blocks = form.querySelectorAll('label').map((l) => l.closest('div') || l.closest('fieldset') || l);
   }
   return blocks.filter(Boolean);
 }
 
 function labelOf(block) {
-  const l = block.querySelector('label[title]') || block.querySelector('label, legend');
-  return clean(l && (l.getAttribute('title') || l.textContent));
+  const titled = block.querySelectorAll('label').find((x) => x.getAttribute('title'));
+  const l = titled || block.querySelector('label') || block.querySelector('legend');
+  return clean(l && (l.getAttribute('title') || l.text));
 }
 
 function swatchValues(block) {
-  const imgs = [...block.querySelectorAll('.swatch-container img, .image-item img, [class*="swatch"] img')];
+  const imgs = block.querySelectorAll('img').filter((img) => {
+    const p = img.closest('div');
+    const c = `${p?.getAttribute('class') || ''} ${p?.parentNode?.getAttribute?.('class') || ''}`;
+    return /swatch|image-item|option|thumb/i.test(c);
+  });
   if (imgs.length >= 2) {
     return imgs.map((img, i) => ({
       index: i + 1,
@@ -94,7 +105,8 @@ function swatchValues(block) {
       thumb: img.getAttribute('src') || null,      // chỉ ghi lại để đối chiếu, không tải về
     }));
   }
-  const chips = [...block.querySelectorAll('[data-value],[data-swatch],[role="radio"]')];
+  const chips = block.querySelectorAll('*').filter((el) =>
+    el.getAttribute('data-value') || el.getAttribute('data-swatch') || el.getAttribute('role') === 'radio');
   if (chips.length >= 2) {
     return chips.map((c, i) => ({
       index: i + 1,
@@ -104,20 +116,20 @@ function swatchValues(block) {
   }
   const sel = block.querySelector('select');
   if (sel) {
-    const opts = [...sel.querySelectorAll('option')].filter((o) => clean(o.textContent));
+    const opts = sel.querySelectorAll('option').filter((o) => clean(o.text));
     if (opts.length >= 2) {
-      return opts.map((o, i) => ({ index: i + 1, label: clean(o.textContent), value: o.value || null }));
+      return opts.map((o, i) => ({ index: i + 1, label: clean(o.text), value: o.getAttribute('value') || null }));
     }
   }
-  const radios = [...block.querySelectorAll('input[type=radio]')];
+  const radios = block.querySelectorAll('input').filter((r) => r.getAttribute('type') === 'radio');
   if (radios.length >= 2) {
-    return radios.map((r, i) => ({ index: i + 1, label: clean(r.getAttribute('value')) || `#${i + 1}`, value: r.value }));
+    return radios.map((r, i) => ({ index: i + 1, label: clean(r.getAttribute('value')) || `#${i + 1}`, value: r.getAttribute('value') }));
   }
   return null;
 }
 
 function parseForm(html) {
-  const doc = new JSDOM(html).window.document;
+  const doc = parse(html, { blockTextElements: { script: false, style: false } });
   const used = new Set();
   const out = [];
   for (const block of optionBlocks(doc)) {
@@ -125,14 +137,20 @@ function parseForm(html) {
     if (!label || label.length > 80) continue;
     if (/^(quantity|rating|review|display name|email|sort by|country|shipping)/i.test(label)) continue;
 
-    const input = block.querySelector('input[type=text], input:not([type]), textarea');
+    const input = block.querySelectorAll('input').find((i) => {
+      const t = (i.getAttribute('type') || 'text').toLowerCase();
+      return t === 'text' || t === 'search';
+    }) || block.querySelector('textarea');
     const values = swatchValues(block);
-    const required = /required/i.test(block.className) || !!block.querySelector('.ant-form-item-required, [required]');
-    const hint = clean(block.querySelector('.ant-form-item-extra, [class*="help"], small')?.textContent) || null;
+    const cls = block.getAttribute('class') || '';
+    const required = /required/i.test(cls)
+      || block.querySelectorAll('*').some((e) => /required/i.test(e.getAttribute('class') || '') || e.getAttribute('required') != null);
+    const hintEl = block.querySelectorAll('div,small,span').find((e) => /extra|help|hint/i.test(e.getAttribute('class') || ''));
+    const hint = clean(hintEl?.text) || null;
 
     let entry = null;
     if (values && values.length >= 2) {
-      const isCount = /number of|how many/i.test(label) || /template-select/.test(block.className);
+      const isCount = /number of|how many/i.test(label) || /template-select/.test(cls);
       entry = isCount
         ? { type: 'range', min: 1, max: values.length }
         : { type: 'swatch', count: values.length, values: values.slice(0, 40) };
