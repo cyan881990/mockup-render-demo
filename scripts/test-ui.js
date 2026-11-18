@@ -3,9 +3,9 @@ const { JSDOM } = require('jsdom');
 const BASE = process.env.BASE || 'http://localhost:3000';
 
 (async () => {
-  const html = await (await fetch(`${BASE}/`)).text();
+  const html = await (await fetch(`${BASE}/lab`)).text();
   const appjs = await (await fetch(`${BASE}/app.js`)).text();
-  const dom = new JSDOM(html, { url: `${BASE}/`, runScripts: 'outside-only', pretendToBeVisual: true });
+  const dom = new JSDOM(html, { url: `${BASE}/lab`, runScripts: 'outside-only', pretendToBeVisual: true });
   const { window } = dom;
   const errors = [];
   window.addEventListener('error', (e) => errors.push(String(e.error || e.message)));

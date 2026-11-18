@@ -210,10 +210,13 @@ function serveStatic(reply, root, rel, cacheControl = 'public, max-age=300') {
     .send(fs.createReadStream(file));
 }
 
-app.get('/', (req, reply) => serveStatic(reply, path.join(__dirname, 'public'), 'index.html', 'no-cache'));
-app.get('/app.js', (req, reply) => serveStatic(reply, path.join(__dirname, 'public'), 'app.js', 'no-cache'));
-app.get('/product.html', (req, reply) => serveStatic(reply, path.join(__dirname, 'public'), 'product.html', 'no-cache'));
-app.get('/product.js', (req, reply) => serveStatic(reply, path.join(__dirname, 'public'), 'product.js', 'no-cache'));
+const page = (file) => (req, reply) => serveStatic(reply, path.join(__dirname, 'public'), file, 'no-cache');
+app.get('/', page('index.html'));               // trang bán hàng
+app.get('/product.html', page('index.html'));
+app.get('/product.js', page('product.js'));
+app.get('/lab', page('lab.html'));              // bảng điều khiển render
+app.get('/lab.html', page('lab.html'));
+app.get('/app.js', page('app.js'));
 app.get('/assets/*', (req, reply) => serveStatic(reply, path.join(__dirname, 'assets'), req.params['*'], 'public, max-age=3600'));
 
 // ------------------------------------------------------------------- bootstrap
