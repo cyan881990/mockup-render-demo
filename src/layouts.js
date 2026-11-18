@@ -146,10 +146,10 @@ function round({ canvas, pack, ink, accent, bg, has }) {
   const headFit = { maxWidth: Math.min(safeW(0.225), Math.round(w * 0.44)), minSize: 16 };
   if (has.headline) {
     L.push(txt({ when: '{{opt.year}} != ', text: '{{opt.headline}} · {{opt.year}}', font: 'slab',
-      size: headSize, x: cx, y: Math.round(h * 0.245), align: 'center', fill: accent,
+      size: headSize, x: cx, y: Math.round(h * 0.245), align: 'center', fill: ink,
       letterSpacing: 6, transformText: 'upper', fit: headFit }));
     L.push(txt({ when: '{{opt.year}} == ', text: '{{opt.headline}}', font: 'slab',
-      size: headSize, x: cx, y: Math.round(h * 0.245), align: 'center', fill: accent,
+      size: headSize, x: cx, y: Math.round(h * 0.245), align: 'center', fill: ink,
       letterSpacing: 6, transformText: 'upper', fit: headFit }));
   }
   L.push(txt({ text: '{{opt.name}}', font: 'script', size: Math.round(w * 0.105),
@@ -158,8 +158,8 @@ function round({ canvas, pack, ink, accent, bg, has }) {
 
   L.push({
     type: 'repeat', over: '{{members}}', as: 'slot',
-    layout: { mode: 'arc', centerX: cx, centerY: Math.round(h * 0.785), radius: Math.round(w * 0.25),
-      startDeg: 206, endDeg: 334, spreadAt: 5, itemW, itemH, labelOffset: Math.round(itemH * 0.62) },
+    layout: { mode: 'arc', centerX: cx, centerY: Math.round(h * 0.785), radius: Math.round(w * 0.233),
+      startDeg: 210, endDeg: 330, spreadAt: 5, itemW, itemH, labelOffset: Math.round(itemH * 0.62) },
     children: [
       { type: 'image', src: pack.item.body, x: '{{slot.x}}', y: '{{slot.y}}', w: '{{slot.w}}', h: '{{slot.h}}',
         tint: '{{slot.color.hex}}', opacity: 0.97 },

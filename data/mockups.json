@@ -201,5 +201,44 @@
   "blend": {
    "lightStrength": 1.0
   }
+ },
+ {
+  "id": "ornament-flatlay",
+  "name": "Ornament gỗ — chụp phẳng trên vải lanh",
+  "productTypes": [
+   "ornament"
+  ],
+  "base": "mockups/ornament-flatlay/base.jpg",
+  "mask": "mockups/ornament-flatlay/mask.png",
+  "light": "mockups/ornament-flatlay/light.png",
+  "size": [
+   1200,
+   1200
+  ],
+  "previewWidth": 800,
+  "surface": {
+   "type": "quad",
+   "points": [
+    [
+     240,
+     253
+    ],
+    [
+     957,
+     253
+    ],
+    [
+     957,
+     970
+    ],
+    [
+     240,
+     970
+    ]
+   ]
+  },
+  "blend": {
+   "lightStrength": 1.0
+  }
  }
 ]
