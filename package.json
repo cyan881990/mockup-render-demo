@@ -12,7 +12,7 @@
     "test": "node scripts/test-render.js && node scripts/test-ui.js",
     "warm": "curl -s -XPOST localhost:3000/api/warm | tail -1",
     "fonts": "node scripts/fetch-fonts.js",
-    "vercel-build": "node scripts/fetch-fonts.js && node scripts/gen-assets.js",
+    "vercel-build": "node scripts/ensure-assets.js",
     "cf:dev": "wrangler dev",
     "cf:deploy": "wrangler deploy"
   },
