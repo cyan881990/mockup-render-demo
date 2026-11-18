@@ -1,0 +1,29 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "mockup-render-demo",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-11-17",
+
+  // The render engine runs as a container; the Worker in front of it only routes and caches.
+  "containers": [
+    {
+      "class_name": "RenderContainer",
+      "image": "./Dockerfile",
+      // standard-2 = 1 vCPU / 6 GiB. Use standard-3 (2 vCPU) to match the benchmark numbers.
+      "instance_type": "standard-2",
+      "max_instances": 2
+    }
+  ],
+
+  "durable_objects": {
+    "bindings": [
+      { "name": "RENDER", "class_name": "RenderContainer" }
+    ]
+  },
+
+  "exports": {
+    "RenderContainer": { "type": "durable-object", "storage": "sqlite" }
+  },
+
+  "observability": { "enabled": true }
+}

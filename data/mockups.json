@@ -1,0 +1,166 @@
+[
+ {
+  "id": "rug-hallway",
+  "name": "Runner rug — hallway",
+  "productTypes": [
+   "runner-rug"
+  ],
+  "base": "mockups/rug-hallway3/base.jpg",
+  "mask": "mockups/rug-hallway3/mask.png",
+  "light": "mockups/rug-hallway3/light.jpg",
+  "size": [
+   1800,
+   1200
+  ],
+  "previewWidth": 800,
+  "artOversample": 1.2,
+  "artMaxWidth": 2400,
+  "surface": {
+   "type": "quad",
+   "points": [
+    [
+     274,
+     1073
+    ],
+    [
+     1179,
+     287
+    ],
+    [
+     1404,
+     316
+    ],
+    [
+     1125,
+     1165
+    ]
+   ]
+  },
+  "blend": {
+   "lightStrength": 0.95
+  }
+ },
+ {
+  "id": "rug-flatlay",
+  "name": "Runner rug — flat lay",
+  "productTypes": [
+   "runner-rug"
+  ],
+  "base": "mockups/rug-flatlay2/base.jpg",
+  "mask": "mockups/rug-flatlay2/mask.png",
+  "light": "mockups/rug-flatlay2/light.jpg",
+  "size": [
+   1800,
+   1200
+  ],
+  "previewWidth": 800,
+  "surface": {
+   "type": "quad",
+   "points": [
+    [
+     61,
+     319
+    ],
+    [
+     1704,
+     315
+    ],
+    [
+     1726,
+     810
+    ],
+    [
+     43,
+     809
+    ]
+   ]
+  },
+  "blend": {
+   "lightStrength": 0.95
+  }
+ },
+ {
+  "id": "mug-desk",
+  "name": "11oz mug — desk",
+  "productTypes": [
+   "mug"
+  ],
+  "base": "mockups/mug-desk2/base.jpg",
+  "mask": "mockups/mug-desk2/mask.png",
+  "light": "mockups/mug-desk2/light.jpg",
+  "size": [
+   1600,
+   1280
+  ],
+  "previewWidth": 800,
+  "surface": {
+   "type": "quad",
+   "cylinder": 0.82,
+   "points": [
+    [
+     461,
+     407
+    ],
+    [
+     1072,
+     407
+    ],
+    [
+     1072,
+     878
+    ],
+    [
+     461,
+     878
+    ]
+   ]
+  },
+  "blend": {
+   "lightStrength": 1.0
+  }
+ },
+ {
+  "id": "tee-flatlay",
+  "name": "T-shirt — flat lay",
+  "productTypes": [
+   "tee"
+  ],
+  "base": "mockups/tee-flatlay2/base.jpg",
+  "mask": "mockups/tee-flatlay2/mask.png",
+  "light": "mockups/tee-flatlay2/light.jpg",
+  "displaceMap": "mockups/tee-flatlay2/displace.jpg",
+  "size": [
+   1400,
+   1400
+  ],
+  "previewWidth": 800,
+  "surface": {
+   "type": "quad",
+   "points": [
+    [
+     482,
+     401
+    ],
+    [
+     917,
+     401
+    ],
+    [
+     917,
+     977
+    ],
+    [
+     482,
+     977
+    ]
+   ]
+  },
+  "displace": {
+   "x": 7,
+   "y": 7
+  },
+  "blend": {
+   "lightStrength": 1.0
+  }
+ }
+]

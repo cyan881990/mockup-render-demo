@@ -1,0 +1,100 @@
+[
+  {
+    "id": "script",
+    "file": "NothingYouCouldDo-Regular.ttf",
+    "label": "Handwritten Script",
+    "fallback": [
+      "smooch",
+      "serif",
+      "unicode"
+    ]
+  },
+  {
+    "id": "display",
+    "file": "EricaOne-Regular.ttf",
+    "label": "Holiday Display",
+    "fallback": [
+      "condensed",
+      "inter",
+      "unicode"
+    ]
+  },
+  {
+    "id": "heading",
+    "file": "Outfit-Bold.ttf",
+    "label": "Outfit Bold",
+    "fallback": [
+      "inter",
+      "worksans",
+      "unicode"
+    ]
+  },
+  {
+    "id": "default",
+    "file": "Outfit-Regular.ttf",
+    "label": "Outfit Regular",
+    "fallback": [
+      "inter",
+      "worksans",
+      "unicode"
+    ]
+  },
+  {
+    "id": "inter",
+    "file": "Inter-Bold.ttf",
+    "label": "Inter Bold (Vietnamese)"
+  },
+  {
+    "id": "worksans",
+    "file": "WorkSans-Bold.ttf",
+    "label": "Work Sans Bold (Vietnamese)"
+  },
+  {
+    "id": "serif",
+    "file": "Lora-Bold.ttf",
+    "label": "Lora Bold (Vietnamese)"
+  },
+  {
+    "id": "condensed",
+    "file": "BigShoulders-Bold.ttf",
+    "label": "Big Shoulders (Vietnamese)"
+  },
+  {
+    "id": "smooch",
+    "file": "SmoochSans-Medium.ttf",
+    "label": "Smooch Sans (Vietnamese)"
+  },
+  {
+    "id": "slab",
+    "file": "YoungSerif-Regular.ttf",
+    "label": "Young Serif",
+    "fallback": [
+      "serif",
+      "unicode"
+    ]
+  },
+  {
+    "id": "poppins",
+    "file": "Poppins-Bold.ttf",
+    "label": "Poppins Bold",
+    "fallback": [
+      "inter",
+      "unicode"
+    ]
+  },
+  {
+    "id": "boldonse",
+    "file": "Boldonse-Regular.ttf",
+    "label": "Boldonse",
+    "fallback": [
+      "condensed",
+      "unicode"
+    ]
+  },
+  {
+    "id": "unicode",
+    "file": "NotoSans-Bold.ttf",
+    "label": "Noto Sans (wide coverage safety net)",
+    "fallbackPool": true
+  }
+]

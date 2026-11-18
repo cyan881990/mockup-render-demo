@@ -1,0 +1,28 @@
+{
+  "defaultFormat": "webp",
+  "defaultQuality": 82,
+  "widths": [
+    320,
+    480,
+    640,
+    800,
+    1000,
+    1200,
+    1600
+  ],
+  "memoryCacheMB": 384,
+  "artworkCacheMB": 256,
+  "diskCache": true,
+  "maxWidth": 2000,
+  "cdnMaxAge": 31536000,
+  "warmOnBoot": true,
+  "optimizeInBackground": false,
+  "maxConcurrentRenders": 0,
+  "serverlessWidths": [
+    320,
+    480,
+    640,
+    800,
+    1200
+  ]
+}

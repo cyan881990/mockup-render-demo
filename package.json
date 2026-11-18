@@ -1,0 +1,49 @@
+{
+  "name": "mockup-render-server",
+  "version": "1.0.0",
+  "description": "Dynamic personalized-product mockup renderer driven by storefront URL options",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "cluster": "node cluster.js",
+    "dev": "node --watch server.js",
+    "assets": "node scripts/gen-assets.js",
+    "bench": "node scripts/bench.js",
+    "test": "node scripts/test-render.js && node scripts/test-ui.js",
+    "warm": "curl -s -XPOST localhost:3000/api/warm | tail -1",
+    "fonts": "node scripts/fetch-fonts.js",
+    "vercel-build": "node scripts/fetch-fonts.js && node scripts/gen-assets.js",
+    "cf:dev": "wrangler dev",
+    "cf:deploy": "wrangler deploy"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@cloudflare/containers": "^0.3.7",
+    "@resvg/resvg-js": "^2.6.2",
+    "fastify": "^5.12.8",
+    "fontkit": "^2.0.4",
+    "lru-cache": "^11.5.3",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@expo-google-fonts/big-shoulders-display": "^0.2.3",
+    "@expo-google-fonts/boldonse": "^0.4.0",
+    "@expo-google-fonts/erica-one": "^0.4.1",
+    "@expo-google-fonts/inter": "^0.4.2",
+    "@expo-google-fonts/lora": "^0.4.2",
+    "@expo-google-fonts/nothing-you-could-do": "^0.4.1",
+    "@expo-google-fonts/noto-sans": "^0.4.2",
+    "@expo-google-fonts/outfit": "^0.4.3",
+    "@expo-google-fonts/poppins": "^0.4.1",
+    "@expo-google-fonts/smooch-sans": "^0.4.2",
+    "@expo-google-fonts/work-sans": "^0.4.2",
+    "@expo-google-fonts/young-serif": "^0.4.0",
+    "jsdom": "^31.0.1",
+    "wrangler": "^4.163.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

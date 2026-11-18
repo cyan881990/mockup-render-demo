@@ -1,0 +1,83 @@
+{
+ "file": "Hv8tTgoNFUBBSTH67pWmQI",
+ "assets": [
+  {
+   "name": "stocking-classic",
+   "kind": "part",
+   "node": "1:2",
+   "url": "https://www.figma.com/api/mcp/asset/6b51839c-1860-4a18-9ad0-956573cd62ad.png"
+  },
+  {
+   "name": "garland-swag",
+   "kind": "part",
+   "node": "2:2",
+   "url": "https://www.figma.com/api/mcp/asset/e864e0e5-55dd-4ad1-b4c6-aba88a9d22aa.png"
+  },
+  {
+   "name": "pet-dog",
+   "kind": "part",
+   "node": "2:3",
+   "url": "https://www.figma.com/api/mcp/asset/143c6d49-5c43-4330-bc2f-fd714fe93379.png"
+  },
+  {
+   "name": "pet-cat",
+   "kind": "part",
+   "node": "3:4",
+   "url": "https://www.figma.com/api/mcp/asset/f23f64e2-3fec-4dd5-ba0e-07752ded8685.png"
+  },
+  {
+   "name": "snowflakes",
+   "kind": "part",
+   "node": "3:5",
+   "url": "https://www.figma.com/api/mcp/asset/a88e2fad-c2e9-4220-ba4d-871e776b90d5.png"
+  },
+  {
+   "name": "stocking-cable",
+   "kind": "part",
+   "node": "3:6",
+   "url": "https://www.figma.com/api/mcp/asset/e03abdaa-63ff-4986-baf9-7e60aae7c3b6.png"
+  },
+  {
+   "name": "sprig-corner",
+   "kind": "part",
+   "node": "3:7",
+   "url": "https://www.figma.com/api/mcp/asset/a6a1c209-0103-4d97-8eb0-30ca46aa9ae1.png"
+  },
+  {
+   "name": "scene-rug-hallway",
+   "kind": "scene",
+   "node": "3:8",
+   "url": "https://www.figma.com/api/mcp/asset/3bebbaa7-d635-4f7c-a150-1c0ea8f767e6.png"
+  },
+  {
+   "name": "scene-rug-flatlay",
+   "kind": "scene",
+   "node": "3:9",
+   "url": "https://www.figma.com/api/mcp/asset/f5b3ecf6-36a6-40a1-8775-5002912fcb86.png"
+  },
+  {
+   "name": "scene-mug-desk",
+   "kind": "scene",
+   "node": "3:10",
+   "url": "https://www.figma.com/api/mcp/asset/62e47f93-ed1e-47ff-a361-36870c21eff8.png"
+  },
+  {
+   "name": "scene-tee-flatlay",
+   "kind": "scene",
+   "node": "3:11",
+   "url": "https://www.figma.com/api/mcp/asset/727dc56d-6386-4b67-9827-677faeecc9ad.png"
+  },
+  {
+   "name": "garland-wide",
+   "kind": "part",
+   "node": "4:2",
+   "url": "https://www.figma.com/api/mcp/asset/7a69c1c5-33c7-4671-a0d1-0a572b786b88.png"
+  },
+  {
+   "name": "scene-rug-hallway2",
+   "kind": "scene",
+   "node": "5:2",
+   "url": "https://www.figma.com/api/mcp/asset/abbd9ce8-617c-48ce-b592-2b8c3ab0e133.png"
+  }
+ ]
+}

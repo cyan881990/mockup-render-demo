@@ -1,0 +1,754 @@
+[
+ {
+  "id": "xmas-together-runner",
+  "name": "Christmas Together — Runner Rug",
+  "canvas": {
+   "w": 2400,
+   "h": 800,
+   "bg": "{{opt.background.hex}}"
+  },
+  "assetDir": "art",
+  "defaultFontFamily": "Outfit",
+  "options": [
+   {
+    "key": "background",
+    "type": "swatch",
+    "label": "Background",
+    "default": "red",
+    "values": [
+     {
+      "value": "red",
+      "label": "Classic Red",
+      "hex": "#8d1d1d",
+      "ink": "#f7e8c8",
+      "accent": "#d8b26a"
+     },
+     {
+      "value": "green",
+      "label": "Pine Green",
+      "hex": "#14512f",
+      "ink": "#f4ead3",
+      "accent": "#d8b26a"
+     },
+     {
+      "value": "navy",
+      "label": "Winter Navy",
+      "hex": "#152a4a",
+      "ink": "#eef3fa",
+      "accent": "#9fc2e8"
+     },
+     {
+      "value": "cream",
+      "label": "Warm Cream",
+      "hex": "#e9ddc4",
+      "ink": "#6d2020",
+      "accent": "#a8542c"
+     },
+     {
+      "value": "charcoal",
+      "label": "Charcoal",
+      "hex": "#272a2b",
+      "ink": "#f2efe9",
+      "accent": "#c79a4f"
+     },
+     {
+      "value": "burgundy",
+      "label": "Burgundy",
+      "hex": "#5c1230",
+      "ink": "#f6e2e8",
+      "accent": "#e0a3b4"
+     }
+    ]
+   },
+   {
+    "key": "member",
+    "type": "range",
+    "label": "Family members",
+    "min": 1,
+    "max": 6,
+    "default": 3
+   },
+   {
+    "key": "name",
+    "type": "text",
+    "label": "Family name",
+    "maxLength": 20,
+    "default": "The Nguyens"
+   },
+   {
+    "key": "headline",
+    "type": "text",
+    "label": "Top line",
+    "maxLength": 26,
+    "default": "Merry Christmas",
+    "upper": true
+   },
+   {
+    "key": "year",
+    "type": "text",
+    "label": "Year",
+    "maxLength": 4,
+    "default": "2026"
+   },
+   {
+    "key": "soc",
+    "as": "color",
+    "type": "swatch",
+    "label": "Stocking colour",
+    "default": "red",
+    "allowCustomHex": true,
+    "indexed": {
+     "by": "member",
+     "from": 1,
+     "max": 6
+    },
+    "values": [
+     {
+      "value": "red",
+      "label": "Red",
+      "hex": "#c0352b",
+      "aliases": [
+       "do"
+      ]
+     },
+     {
+      "value": "green",
+      "label": "Green",
+      "hex": "#2f7d4f",
+      "aliases": [
+       "xanhla"
+      ]
+     },
+     {
+      "value": "blue",
+      "label": "Blue",
+      "hex": "#2f6ea8",
+      "aliases": [
+       "xanh"
+      ]
+     },
+     {
+      "value": "gold",
+      "label": "Gold",
+      "hex": "#d7a54a"
+     },
+     {
+      "value": "cream",
+      "label": "Cream",
+      "hex": "#efe3c8"
+     },
+     {
+      "value": "pink",
+      "label": "Pink",
+      "hex": "#d98aa0"
+     },
+     {
+      "value": "plum",
+      "label": "Plum",
+      "hex": "#6f3b6e"
+     },
+     {
+      "value": "teal",
+      "label": "Teal",
+      "hex": "#2b7f80"
+     }
+    ]
+   },
+   {
+    "key": "mname",
+    "as": "label",
+    "type": "text",
+    "label": "Name on stocking",
+    "maxLength": 10,
+    "default": "",
+    "indexed": {
+     "by": "member",
+     "from": 1,
+     "max": 6
+    }
+   },
+   {
+    "key": "pet",
+    "type": "swatch",
+    "label": "Pet",
+    "default": "none",
+    "values": [
+     {
+      "value": "none",
+      "label": "No pet",
+      "hex": "#000000"
+     },
+     {
+      "value": "dog",
+      "label": "Dog",
+      "hex": "#e8d7b4",
+      "art": "pet-dog2"
+     },
+     {
+      "value": "cat",
+      "label": "Cat",
+      "hex": "#e8d7b4",
+      "art": "pet-cat2"
+     }
+    ]
+   }
+  ],
+  "layers": [
+   {
+    "type": "pattern",
+    "src": "snow.png",
+    "size": 210,
+    "opacity": 0.1,
+    "w": 2400,
+    "h": 800
+   },
+   {
+    "type": "rect",
+    "x": 40,
+    "y": 40,
+    "w": 2320,
+    "h": 720,
+    "rx": 26,
+    "fill": "none",
+    "stroke": "{{opt.background.accent}}",
+    "strokeWidth": 6,
+    "opacity": 0.75
+   },
+   {
+    "type": "rect",
+    "x": 60,
+    "y": 60,
+    "w": 2280,
+    "h": 680,
+    "rx": 18,
+    "fill": "none",
+    "stroke": "{{opt.background.accent}}",
+    "strokeWidth": 2,
+    "opacity": 0.45
+   },
+   {
+    "type": "image",
+    "src": "sprig.webp",
+    "x": 2120,
+    "y": 498,
+    "w": 258,
+    "h": 264,
+    "opacity": 0.97,
+    "flip": "x"
+   },
+   {
+    "type": "repeat",
+    "over": "{{members}}",
+    "as": "slot",
+    "layout": {
+     "mode": "row",
+     "itemW": 215,
+     "itemH": 524,
+     "gap": "auto",
+     "maxWidth": 1020,
+     "centerX": 700,
+     "baselineY": 742,
+     "stagger": 11
+    },
+    "children": [
+     {
+      "type": "image",
+      "src": "stocking2-body.webp",
+      "x": "{{slot.x}}",
+      "y": "{{slot.y}}",
+      "w": "{{slot.w}}",
+      "h": "{{slot.h}}",
+      "tint": "{{slot.color.hex}}"
+     },
+     {
+      "type": "image",
+      "src": "stocking2-cuff.webp",
+      "x": "{{slot.x}}",
+      "y": "{{slot.y}}",
+      "w": "{{slot.w}}",
+      "h": "{{slot.h}}"
+     },
+     {
+      "type": "text",
+      "when": "{{slot.label}} != ",
+      "text": "{{slot.label}}",
+      "font": "script",
+      "size": 56,
+      "x": "{{slot.x}} + {{slot.w}} * 0.52",
+      "y": "{{slot.y}} + {{slot.h}} * 0.268",
+      "align": "center",
+      "fill": "#4a372c",
+      "opacity": 0.95,
+      "fit": {
+       "maxWidth": "{{slot.w}} * 0.62",
+       "minSize": 18
+      }
+     }
+    ]
+   },
+   {
+    "type": "image",
+    "when": "{{opt.pet.value}} != none",
+    "src": "{{opt.pet.art}}.webp",
+    "x": 1040,
+    "y": 366,
+    "w": 232,
+    "h": 376,
+    "opacity": 1
+   },
+   {
+    "type": "image",
+    "src": "garland-top.webp",
+    "x": -44,
+    "y": -96,
+    "w": 2488,
+    "h": 392
+   },
+   {
+    "type": "text",
+    "text": "{{opt.headline}}",
+    "font": "slab",
+    "size": 56,
+    "x": 1752,
+    "y": 452,
+    "align": "center",
+    "fill": "{{opt.background.accent}}",
+    "letterSpacing": 13,
+    "transformText": "upper",
+    "fit": {
+     "maxWidth": 860,
+     "minSize": 26
+    }
+   },
+   {
+    "type": "text",
+    "text": "{{opt.name}}",
+    "font": "script",
+    "size": 160,
+    "x": 1752,
+    "y": 616,
+    "align": "center",
+    "fill": "{{opt.background.ink}}",
+    "fit": {
+     "maxWidth": 900,
+     "minSize": 64
+    }
+   },
+   {
+    "type": "text",
+    "when": "{{opt.year}} != ",
+    "text": "{{opt.year}}",
+    "font": "heading",
+    "size": 38,
+    "x": 1752,
+    "y": 700,
+    "align": "center",
+    "fill": "{{opt.background.accent}}",
+    "letterSpacing": 10,
+    "opacity": 0.9
+   }
+  ]
+ },
+ {
+  "id": "xmas-family-mug",
+  "name": "Christmas Together — Mug Wrap",
+  "canvas": {
+   "w": 1400,
+   "h": 1080,
+   "bg": "transparent"
+  },
+  "assetDir": "art",
+  "options": [
+   {
+    "key": "member",
+    "type": "range",
+    "label": "Family members",
+    "min": 1,
+    "max": 5,
+    "default": 3
+   },
+   {
+    "key": "name",
+    "type": "text",
+    "label": "Family name",
+    "maxLength": 18,
+    "default": "The Nguyens"
+   },
+   {
+    "key": "headline",
+    "type": "text",
+    "label": "Top line",
+    "maxLength": 22,
+    "default": "Merry & Bright",
+    "upper": true
+   },
+   {
+    "key": "ink",
+    "type": "swatch",
+    "label": "Print colour",
+    "default": "red",
+    "values": [
+     {
+      "value": "red",
+      "label": "Red",
+      "hex": "#b02a25",
+      "accent": "#2f7d4f"
+     },
+     {
+      "value": "green",
+      "label": "Green",
+      "hex": "#1f6b40",
+      "accent": "#b02a25"
+     },
+     {
+      "value": "navy",
+      "label": "Navy",
+      "hex": "#1d3a63",
+      "accent": "#c79a4f"
+     },
+     {
+      "value": "black",
+      "label": "Black",
+      "hex": "#222222",
+      "accent": "#b02a25"
+     }
+    ]
+   },
+   {
+    "key": "soc",
+    "as": "color",
+    "type": "swatch",
+    "label": "Stocking colour",
+    "default": "red",
+    "allowCustomHex": true,
+    "indexed": {
+     "by": "member",
+     "from": 1,
+     "max": 5
+    },
+    "values": [
+     {
+      "value": "red",
+      "label": "Red",
+      "hex": "#c0352b"
+     },
+     {
+      "value": "green",
+      "label": "Green",
+      "hex": "#2f7d4f"
+     },
+     {
+      "value": "blue",
+      "label": "Blue",
+      "hex": "#2f6ea8"
+     },
+     {
+      "value": "gold",
+      "label": "Gold",
+      "hex": "#d7a54a"
+     },
+     {
+      "value": "cream",
+      "label": "Cream",
+      "hex": "#efe3c8"
+     },
+     {
+      "value": "pink",
+      "label": "Pink",
+      "hex": "#d98aa0"
+     }
+    ]
+   }
+  ],
+  "layers": [
+   {
+    "type": "image",
+    "src": "garland.webp",
+    "x": 180,
+    "y": -30,
+    "w": 1040,
+    "h": 400
+   },
+   {
+    "type": "text",
+    "text": "{{opt.headline}}",
+    "font": "slab",
+    "size": 52,
+    "x": 700,
+    "y": 480,
+    "align": "center",
+    "fill": "{{opt.ink.accent}}",
+    "letterSpacing": 10,
+    "transformText": "upper",
+    "fit": {
+     "maxWidth": 900,
+     "minSize": 28
+    }
+   },
+   {
+    "type": "repeat",
+    "over": "{{members}}",
+    "as": "slot",
+    "layout": {
+     "mode": "row",
+     "itemW": 180,
+     "itemH": 439,
+     "gap": "auto",
+     "maxWidth": 1150,
+     "centerX": 700,
+     "baselineY": 930,
+     "stagger": 12
+    },
+    "children": [
+     {
+      "type": "image",
+      "src": "stocking2-body.webp",
+      "x": "{{slot.x}}",
+      "y": "{{slot.y}}",
+      "w": "{{slot.w}}",
+      "h": "{{slot.h}}",
+      "tint": "{{slot.color.hex}}"
+     },
+     {
+      "type": "image",
+      "src": "stocking2-cuff.webp",
+      "x": "{{slot.x}}",
+      "y": "{{slot.y}}",
+      "w": "{{slot.w}}",
+      "h": "{{slot.h}}"
+     },
+     {
+      "type": "text",
+      "when": "{{slot.label}} != ",
+      "text": "{{slot.label}}",
+      "font": "script",
+      "size": 56,
+      "x": "{{slot.x}} + {{slot.w}} * 0.52",
+      "y": "{{slot.y}} + {{slot.h}} * 0.268",
+      "align": "center",
+      "fill": "#4a372c",
+      "opacity": 0.95,
+      "fit": {
+       "maxWidth": "{{slot.w}} * 0.62",
+       "minSize": 18
+      }
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "{{opt.name}}",
+    "font": "script",
+    "size": 132,
+    "x": 700,
+    "y": 1040,
+    "align": "center",
+    "fill": "{{opt.ink.hex}}",
+    "fit": {
+     "maxWidth": 1150,
+     "minSize": 56
+    }
+   }
+  ]
+ },
+ {
+  "id": "xmas-family-tee",
+  "name": "Christmas Together — Tee Print",
+  "canvas": {
+   "w": 1200,
+   "h": 1590,
+   "bg": "transparent"
+  },
+  "assetDir": "art",
+  "options": [
+   {
+    "key": "member",
+    "type": "range",
+    "label": "Family members",
+    "min": 1,
+    "max": 5,
+    "default": 3
+   },
+   {
+    "key": "name",
+    "type": "text",
+    "label": "Family name",
+    "maxLength": 18,
+    "default": "The Nguyens"
+   },
+   {
+    "key": "headline",
+    "type": "text",
+    "label": "Top line",
+    "maxLength": 24,
+    "default": "Family Christmas",
+    "upper": true
+   },
+   {
+    "key": "ink",
+    "type": "swatch",
+    "label": "Print colour",
+    "default": "red",
+    "values": [
+     {
+      "value": "red",
+      "label": "Red",
+      "hex": "#b02a25",
+      "accent": "#2f7d4f"
+     },
+     {
+      "value": "green",
+      "label": "Green",
+      "hex": "#1f6b40",
+      "accent": "#b02a25"
+     },
+     {
+      "value": "black",
+      "label": "Black",
+      "hex": "#1d1d1d",
+      "accent": "#b02a25"
+     }
+    ]
+   },
+   {
+    "key": "soc",
+    "as": "color",
+    "type": "swatch",
+    "label": "Stocking colour",
+    "default": "red",
+    "allowCustomHex": true,
+    "indexed": {
+     "by": "member",
+     "from": 1,
+     "max": 5
+    },
+    "values": [
+     {
+      "value": "red",
+      "label": "Red",
+      "hex": "#c0352b"
+     },
+     {
+      "value": "green",
+      "label": "Green",
+      "hex": "#2f7d4f"
+     },
+     {
+      "value": "blue",
+      "label": "Blue",
+      "hex": "#2f6ea8"
+     },
+     {
+      "value": "gold",
+      "label": "Gold",
+      "hex": "#d7a54a"
+     },
+     {
+      "value": "cream",
+      "label": "Cream",
+      "hex": "#efe3c8"
+     }
+    ]
+   }
+  ],
+  "layers": [
+   {
+    "type": "image",
+    "src": "garland.webp",
+    "x": 120,
+    "y": 100,
+    "w": 960,
+    "h": 370
+   },
+   {
+    "type": "text",
+    "text": "{{opt.headline}}",
+    "font": "slab",
+    "size": 80,
+    "x": 600,
+    "y": 620,
+    "align": "center",
+    "fill": "{{opt.ink.hex}}",
+    "letterSpacing": 10,
+    "transformText": "upper",
+    "fit": {
+     "maxWidth": 1020,
+     "minSize": 34
+    }
+   },
+   {
+    "type": "repeat",
+    "over": "{{members}}",
+    "as": "slot",
+    "layout": {
+     "mode": "row",
+     "itemW": 215,
+     "itemH": 524,
+     "gap": "auto",
+     "maxWidth": 1060,
+     "centerX": 600,
+     "baselineY": 1250,
+     "stagger": 14
+    },
+    "children": [
+     {
+      "type": "image",
+      "src": "stocking2-body.webp",
+      "x": "{{slot.x}}",
+      "y": "{{slot.y}}",
+      "w": "{{slot.w}}",
+      "h": "{{slot.h}}",
+      "tint": "{{slot.color.hex}}"
+     },
+     {
+      "type": "image",
+      "src": "stocking2-cuff.webp",
+      "x": "{{slot.x}}",
+      "y": "{{slot.y}}",
+      "w": "{{slot.w}}",
+      "h": "{{slot.h}}"
+     },
+     {
+      "type": "text",
+      "when": "{{slot.label}} != ",
+      "text": "{{slot.label}}",
+      "font": "script",
+      "size": 56,
+      "x": "{{slot.x}} + {{slot.w}} * 0.52",
+      "y": "{{slot.y}} + {{slot.h}} * 0.268",
+      "align": "center",
+      "fill": "#4a372c",
+      "opacity": 0.95,
+      "fit": {
+       "maxWidth": "{{slot.w}} * 0.62",
+       "minSize": 18
+      }
+     }
+    ]
+   },
+   {
+    "type": "text",
+    "text": "{{opt.name}}",
+    "font": "script",
+    "size": 150,
+    "x": 600,
+    "y": 1430,
+    "align": "center",
+    "fill": "{{opt.ink.hex}}",
+    "fit": {
+     "maxWidth": 1040,
+     "minSize": 60
+    }
+   },
+   {
+    "type": "path",
+    "d": "M380,1478 Q600,1510 820,1478",
+    "stroke": "{{opt.ink.accent}}",
+    "strokeWidth": 6,
+    "fill": "none",
+    "cap": "round",
+    "opacity": 0.85
+   }
+  ]
+ }
+]
