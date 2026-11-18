@@ -92,22 +92,17 @@
   ],
   "defaultMockup": "ornament-tree",
   "match": {
-   "sku": [
-    "orn-snowflake"
-   ],
    "keywords": [
-    "ornament",
-    "snowflake",
     "grandkids",
-    "snowman"
+    "snowflakes",
+    "wooden",
+    "ornament"
    ]
   },
   "paramAliases": {
    "members": "member",
-   "flakes": "member",
-   "grandkids": "member",
    "bg": "background",
-   "grandma": "name"
+   "familyname": "name"
   }
  }
 ]

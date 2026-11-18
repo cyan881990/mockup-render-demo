@@ -231,13 +231,12 @@
    "aspect": 0.98
   },
   "centre": {
-   "src": "snowman.webp",
-   "aspect": 0.82
+   "src": "snowman-pair.webp",
+   "aspect": 1.25
   },
   "item": {
    "body": "snowflake.webp",
-   "aspect": 0.8,
-   "labelBelow": 0.62
+   "aspect": 0.8
   },
   "pets": [
    {

@@ -110,14 +110,22 @@ function flatten(layers, scope, fonts, canvas, out = []) {
         const mid = (a0 + a1) / 2;
         const lo = n === 1 ? mid : mid - (mid - a0) * spanK;
         const hi = n === 1 ? mid : mid + (a1 - mid) * spanK;
+        // nhiều vật phẩm quá thì thu nhỏ cho vừa cung, không để chúng chồng lên nhau
+        const arcLen = Math.abs(hi - lo) * radius;
+        const k = n > 1 ? Math.min(1, (arcLen * 0.98) / (n * w)) : 1;
+        const aw = w * k, ah = h * k;
         items.forEach((item, idx) => {
           const t = n === 1 ? 0.5 : idx / (n - 1);
           const ang = lo + (hi - lo) * t;
           const cx = cx0 + Math.cos(ang) * radius;
           const cy = cy0 + Math.sin(ang) * radius;
+          // điểm trên cung ngoài, cùng góc: chỗ đặt nhãn để tên không đè
+          // lên bông tuyết bên cạnh
+          const outR = radius + (lay.labelOffset !== undefined ? num(lay.labelOffset, scope, 0) : ah * 0.82);
           const slot = {
-            ...item, idx, i: idx + 1, n, w, h,
-            x: cx - w / 2, y: cy - h / 2, cx, cy, bottom: cy + h / 2,
+            ...item, idx, i: idx + 1, n, w: aw, h: ah,
+            x: cx - aw / 2, y: cy - ah / 2, cx, cy, bottom: cy + ah / 2,
+            ox: cx0 + Math.cos(ang) * outR, oy: cy0 + Math.sin(ang) * outR,
             angle: ang * 180 / Math.PI,
           };
           flatten(layer.children, { ...scope, [as]: slot }, fonts, canvas, out);

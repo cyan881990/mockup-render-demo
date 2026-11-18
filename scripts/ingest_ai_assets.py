@@ -92,6 +92,17 @@ def drop_white(im, lum=228, chroma_max=22, feather=0.8):
     return Image.fromarray(a.astype(np.uint8), 'RGBA')
 
 
+def fade_bottom(im, frac=0.10):
+    """Làm mờ dần mép dưới: ảnh sinh ra bị cắt phẳng ở đáy, đặt lên nền sẽ
+    lộ một đường thẳng. Mờ dần thì chân tuyết tan vào nền."""
+    a = np.array(im.convert('RGBA')).astype(np.float32)
+    hgt = a.shape[0]
+    n = max(2, int(hgt * frac))
+    ramp = np.linspace(1.0, 0.0, n)[:, None]
+    a[hgt - n:, :, 3] *= ramp
+    return Image.fromarray(a.astype(np.uint8), 'RGBA')
+
+
 def to_grey(im):
     """Giữ alpha, chuyển màu về xám -> tint nhân màu cho ra đúng sắc độ."""
     a = np.array(im.convert('RGBA')).astype(np.float32)

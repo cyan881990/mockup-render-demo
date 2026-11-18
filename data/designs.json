@@ -905,48 +905,93 @@
   ],
   "layers": [
    {
-    "type": "ellipse",
-    "cx": 600,
-    "cy": 600,
-    "rx": 566,
-    "ry": 566,
-    "fill": "none",
-    "stroke": "{{opt.background.accent}}",
-    "strokeWidth": 6,
-    "opacity": 0.8
-   },
-   {
-    "type": "ellipse",
-    "cx": 600,
-    "cy": 600,
-    "rx": 548,
-    "ry": 548,
-    "fill": "none",
-    "stroke": "{{opt.background.accent}}",
-    "strokeWidth": 2,
-    "opacity": 0.5
+    "type": "rect",
+    "x": 0,
+    "y": 0,
+    "w": 1200,
+    "h": 1200,
+    "fill": {
+     "gradient": [
+      {
+       "at": 0,
+       "color": "#000000",
+       "opacity": 0.22
+      },
+      {
+       "at": 0.55,
+       "color": "#000000",
+       "opacity": 0
+      },
+      {
+       "at": 1,
+       "color": "#ffffff",
+       "opacity": 0.1
+      }
+     ],
+     "angle": 90
+    }
    },
    {
     "type": "pattern",
     "src": "snow.png",
-    "size": 240,
-    "opacity": 0.1,
+    "size": 204,
+    "opacity": 0.13,
     "w": 1200,
     "h": 1200
    },
    {
+    "type": "ellipse",
+    "cx": 600,
+    "cy": 600,
+    "rx": 570,
+    "ry": 570,
+    "fill": "none",
+    "stroke": "{{opt.background.accent}}",
+    "strokeWidth": 7,
+    "opacity": 0.85
+   },
+   {
+    "type": "ellipse",
+    "cx": 600,
+    "cy": 600,
+    "rx": 552,
+    "ry": 552,
+    "fill": "none",
+    "stroke": "{{opt.background.accent}}",
+    "strokeWidth": 2,
+    "opacity": 0.45
+   },
+   {
     "type": "text",
+    "when": "{{opt.year}} != ",
+    "text": "{{opt.headline}} · {{opt.year}}",
+    "font": "slab",
+    "size": 55,
+    "x": 600,
+    "y": 204,
+    "align": "center",
+    "fill": "{{opt.background.accent}}",
+    "letterSpacing": 7,
+    "transformText": "upper",
+    "fit": {
+     "maxWidth": 596,
+     "minSize": 18
+    }
+   },
+   {
+    "type": "text",
+    "when": "{{opt.year}} == ",
     "text": "{{opt.headline}}",
     "font": "slab",
     "size": 55,
     "x": 600,
-    "y": 222,
+    "y": 204,
     "align": "center",
     "fill": "{{opt.background.accent}}",
-    "letterSpacing": 8,
+    "letterSpacing": 7,
     "transformText": "upper",
     "fit": {
-     "maxWidth": 638,
+     "maxWidth": 596,
      "minSize": 18
     }
    },
@@ -954,40 +999,15 @@
     "type": "text",
     "text": "{{opt.name}}",
     "font": "script",
-    "size": 126,
+    "size": 138,
     "x": 600,
-    "y": 378,
+    "y": 342,
     "align": "center",
     "fill": "{{opt.background.ink}}",
     "fit": {
-     "maxWidth": 933,
-     "minSize": 38
+     "maxWidth": 744,
+     "minSize": 40
     }
-   },
-   {
-    "type": "text",
-    "when": "{{opt.year}} != ",
-    "text": "{{opt.year}}",
-    "font": "heading",
-    "size": 34,
-    "x": 600,
-    "y": 462,
-    "align": "center",
-    "fill": "{{opt.background.accent}}",
-    "letterSpacing": 8,
-    "opacity": 0.9,
-    "fit": {
-     "maxWidth": 626,
-     "minSize": 14
-    }
-   },
-   {
-    "type": "image",
-    "src": "snowman.webp",
-    "x": 474,
-    "y": 749,
-    "w": 252,
-    "h": 307
    },
    {
     "type": "repeat",
@@ -996,13 +1016,13 @@
     "layout": {
      "mode": "arc",
      "centerX": 600,
-     "centerY": 960,
-     "radius": 396,
-     "startDeg": 210,
-     "endDeg": 330,
+     "centerY": 936,
+     "radius": 366,
+     "startDeg": 211,
+     "endDeg": 329,
      "spreadAt": 5,
-     "itemW": 114,
-     "itemH": 143
+     "itemW": 138,
+     "itemH": 173
     },
     "children": [
      {
@@ -1012,24 +1032,33 @@
       "y": "{{slot.y}}",
       "w": "{{slot.w}}",
       "h": "{{slot.h}}",
-      "tint": "{{slot.color.hex}}"
+      "tint": "{{slot.color.hex}}",
+      "opacity": 0.97
      },
      {
       "type": "text",
       "when": "{{slot.label}} != ",
       "text": "{{slot.label}}",
       "font": "script",
-      "size": 52,
-      "x": "{{slot.cx}}",
-      "y": "{{slot.y}} + {{slot.h}} * 1.24",
+      "size": "{{slot.w}} * 0.5",
+      "x": "{{slot.ox}}",
+      "y": "{{slot.oy}} + {{slot.h}} * 0.18",
       "align": "center",
       "fill": "{{opt.background.ink}}",
       "fit": {
-       "maxWidth": "{{slot.w}} * 1.5",
+       "maxWidth": "{{slot.w}} * 1.25",
        "minSize": 13
       }
      }
     ]
+   },
+   {
+    "type": "image",
+    "src": "snowman-pair.webp",
+    "x": 318,
+    "y": 749,
+    "w": 564,
+    "h": 451
    }
   ]
  }
